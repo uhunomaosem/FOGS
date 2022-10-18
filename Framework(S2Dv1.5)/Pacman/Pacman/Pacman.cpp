@@ -48,7 +48,7 @@ void Pacman::LoadContent()
 
 	// Set menu Parameters
 	_menuBackground = new Texture2D();
-	_menuBackground->Load("Texture/Transparancy.png", false);
+	_menuBackground->Load("Textures/Transparency.png", false);
 	_menuRectangle = new Rect(0.0f, 0.0f, Graphics::GetViewportWidth(), Graphics::GetViewportWidth());
 	_menuStringPosition = new Vector2(Graphics::GetViewportWidth() / 2.0f, Graphics::GetViewportHeight() / 2.0f);
 }
@@ -58,6 +58,7 @@ void Pacman::Update(int elapsedTime)
 
 	// Gets the current state of the keyboard
 	Input::KeyboardState* keyboardState = Input::Keyboard::GetState();
+	if
 	if (!_paused)
 	{
 		_frameCount++;
@@ -77,8 +78,32 @@ void Pacman::Update(int elapsedTime)
 		if (keyboardState->IsKeyDown(Input::Keys::S))
 			_pacmanPosition->Y += _cPacmanSpeed * elapsedTime; //Moves Pacman across Y axis
 
+		// Checks if Pacman is trying to disappear 
+		if (_pacmanPosition->X > Graphics::GetViewportWidth())
+		{
+			// Pacman hit right wall - reset his position
+			_pacmanPosition->X = 0;
+		}
+		// Checks if Pacman is trying to disappear 
+		if (_pacmanPosition->X + _pacmanSourceRect->Width < 0)
+		{
+			// Pacman hit left wall - wrap around to right wall
+			_pacmanPosition->X = Graphics::GetViewportWidth() - _pacmanSourceRect->Width;
+		}
 
+		// Checks if Pacman is trying to disappear 
+		if (_pacmanPosition->Y > Graphics::GetViewportHeight())
+		{
+			// Pacman hit right wall - reset his position
+			_pacmanPosition->Y = 0;
+		}
 
+		// Checks if Pacman is trying to disappear 
+		if (_pacmanPosition->Y + _pacmanSourceRect->Height < 0)
+		{
+			// Pacman hit left wall - wrap around to right wall
+			_pacmanPosition->Y = Graphics::GetViewportHeight() - _pacmanSourceRect->Height;
+		}
 	}
 	if (keyboardState->IsKeyDown(Input::Keys::P) && !_pKeyDown)
 	{
