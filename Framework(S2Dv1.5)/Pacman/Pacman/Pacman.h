@@ -43,6 +43,7 @@ private:
 	Vector2* _menuStringPosition;
 	bool _paused;
 	bool _pKeyDown;
+	bool _startGame;
 
 public:
 	/// <summary> Constructs the Pacman class. </summary>

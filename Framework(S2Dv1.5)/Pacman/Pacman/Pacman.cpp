@@ -7,6 +7,7 @@ Pacman::Pacman(int argc, char* argv[]) : Game(argc, argv), _cPacmanSpeed(0.1f)
 	_frameCount = 0;
 	_paused = false;
 	_pKeyDown = false;
+	_startGame = false;
 	//Initialise important Game aspects
 	Graphics::Initialise(argc, argv, this, 1024, 768, false, 25, 25, "Pacman", 60);
 	Input::Initialise();
@@ -86,6 +87,9 @@ void Pacman::Update(int elapsedTime)
 	}
 	if (keyboardState->IsKeyUp(Input::Keys::P))
 		_pKeyDown = false;
+	
+	if (keyboardState->IsKeyDown(Input::Keys::SPACE))
+		_startGame = true;
 
 }
 
@@ -123,6 +127,16 @@ void Pacman::Draw(int elapsedTime)
 	{
 		std::stringstream menuStream;
 		menuStream << "PAUSED!";
+
+		SpriteBatch::Draw(_menuBackground, _menuRectangle, nullptr);
+		SpriteBatch::DrawString(menuStream.str().c_str(), _menuStringPosition, Color::Red);
+	}
+
+	if (!_startGame)
+	{
+		std::stringstream menuStream;
+		menuStream << "MAIN MENU\n";
+		menuStream << "Start game by pressing space";
 
 		SpriteBatch::Draw(_menuBackground, _menuRectangle, nullptr);
 		SpriteBatch::DrawString(menuStream.str().c_str(), _menuStringPosition, Color::Red);
