@@ -90,7 +90,8 @@ void Pacman::Update(int elapsedTime)
 
 }
 
-void Pacman::UpdatePacman(int elapsedTime, int _pacmanCurrentFrameTime, const int _cpacmanFrameTime, int _pacmanFrame, Rect* _pacmanSourceRect)
+//Update animation for Pacman
+void Pacman::UpdatePacman(int elapsedTime)
 {
 	_pacmanCurrentFrameTime += elapsedTime;
 	if (_pacmanCurrentFrameTime > _cpacmanFrameTime)
@@ -104,7 +105,9 @@ void Pacman::UpdatePacman(int elapsedTime, int _pacmanCurrentFrameTime, const in
 		_pacmanSourceRect->X = _pacmanSourceRect->Width * _pacmanFrame;
 	}
 }
-void Pacman::UpdateMunchie(int elapsedTime, int _munchieCurrentFrameTime, const int _cMunchieFrameTime, int _munchieFrame, Rect* _munchieSourceRect, int _frameCount)
+
+//Update animation for Munchie
+void Pacman::UpdateMunchie(int elapsedTime)
 {
 	_munchieCurrentFrameTime += elapsedTime;
 	if (_munchieCurrentFrameTime > _cMunchieFrameTime)
@@ -118,7 +121,8 @@ void Pacman::UpdateMunchie(int elapsedTime, int _munchieCurrentFrameTime, const 
 	}
 }
 
-void Pacman::CheckViewportCollision(Vector2* _pacmanPosition, Rect* _pacmanSourceRect)
+//Check for collision on any wall 
+void Pacman::CheckViewportCollision()
 {
 
 	// Checks if Pacman is trying to disappear 
@@ -149,6 +153,7 @@ void Pacman::CheckViewportCollision(Vector2* _pacmanPosition, Rect* _pacmanSourc
 	}
 }
 
+//Check for any inputs for movement
 void Pacman::Input(int elapsedTime, Input::KeyboardState* state)
 {
 	// Checks if D key is pressed
@@ -179,9 +184,11 @@ void Pacman::Input(int elapsedTime, Input::KeyboardState* state)
 		_pacmanPosition->Y += _cPacmanSpeed * elapsedTime; //Moves Pacman across Y axis
 		_pacmanDirection = 1;
 	}
+	_pacmanSourceRect->Y = _pacmanSourceRect->Height * _pacmanDirection;
 }
 
-void Pacman::CheckPaused(Input::KeyboardState* state, Input::Keys ,bool _paused, bool _startGame, bool _pKeyDown, int _pacmanDirection, Rect* _pacmanSourceRect)
+//Check if user ever press P 
+void Pacman::CheckPaused(Input::KeyboardState* state, Input::Keys pauseKey)
 {
 
 	//When p is held down game should pause or unpause
@@ -195,7 +202,7 @@ void Pacman::CheckPaused(Input::KeyboardState* state, Input::Keys ,bool _paused,
 
 
 
-	_pacmanSourceRect->Y = _pacmanSourceRect->Height * _pacmanDirection;
+	
 }
 
 void Pacman::Draw(int elapsedTime)
