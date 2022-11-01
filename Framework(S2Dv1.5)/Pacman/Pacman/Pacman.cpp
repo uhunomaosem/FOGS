@@ -64,105 +64,131 @@ void Pacman::Update(int elapsedTime)
 
 	// Gets the current state of the keyboard
 	Input::KeyboardState* keyboardState = Input::Keyboard::GetState();
-	if (!_paused && _startGame)
+
+	if (!_startGame)
 	{
-		
-		// Checks if D key is pressed
-		if (keyboardState->IsKeyDown(Input::Keys::D))
+		//Check for start
+		if (keyboardState->IsKeyDown(Input::Keys::SPACE))
+			_startGame = true;
+	}
+	else
+	{
+		CheckPaused(keyboardState, Input::Keys::P);
+		if (!_paused)
 		{
-			_pacmanPosition->X += _cPacmanSpeed * elapsedTime; //Moves Pacman across X axis
-			_pacmanDirection = 0;
-			
-		}
+			Input(elapsedTime, keyboardState);
+			CheckViewportCollision();
+			_pacmanCurrentFrameTime += elapsedTime;
+			if (_pacmanCurrentFrameTime > _cpacmanFrameTime)
+			{
+				_pacmanFrame++;
 
-			// Checks if A key is pressed
-		if (keyboardState->IsKeyDown(Input::Keys::A))
-		{
-			_pacmanPosition->X -= _cPacmanSpeed * elapsedTime; //Moves Pacman across X axis
-			_pacmanDirection = 2;
-		}
+				if (_pacmanFrame >= 2)
+					_pacmanFrame = 0;
 
-			// Checks if W key is pressed
-		if (keyboardState->IsKeyDown(Input::Keys::W))
-		{
-			_pacmanPosition->Y -= _cPacmanSpeed * elapsedTime; //Moves Pacman across Y axis
-			_pacmanDirection = 3;
-		}
+				_pacmanCurrentFrameTime = 0;
+				_pacmanSourceRect->X = _pacmanSourceRect->Width * _pacmanFrame;
+			}
 
-			// Checks if S key is pressed
-		if (keyboardState->IsKeyDown(Input::Keys::S))
-		{
-			_pacmanPosition->Y += _cPacmanSpeed * elapsedTime; //Moves Pacman across Y axis
-			_pacmanDirection = 1;
-		}
+			_munchieCurrentFrameTime += elapsedTime;
+			if (_munchieCurrentFrameTime > _cMunchieFrameTime)
+			{
+				_frameCount++;
 
-		_pacmanCurrentFrameTime += elapsedTime;
-		if (_pacmanCurrentFrameTime > _cpacmanFrameTime)
-		{
-			_pacmanFrame++;
+				if (_frameCount >= 2)
+					_frameCount = 0;
 
-			if (_pacmanFrame >= 2)
-				_pacmanFrame = 0;
-
-			_pacmanCurrentFrameTime = 0;
-			_pacmanSourceRect->X = _pacmanSourceRect->Width * _pacmanFrame;
-		}
-
-		_munchieCurrentFrameTime += elapsedTime;
-		if (_munchieCurrentFrameTime > _cMunchieFrameTime)
-		{
-			_frameCount++;
-
-			if (_frameCount >= 2)
-				_frameCount = 0;
-
-			_munchieCurrentFrameTime = 0;
-		}
+				_munchieCurrentFrameTime = 0;
+			}
 
 
-		// Checks if Pacman is trying to disappear 
-		if (_pacmanPosition->X > Graphics::GetViewportWidth())
-		{
-			// Pacman hit right wall - reset his position
-			_pacmanPosition->X = 0;
-		}
-		// Checks if Pacman is trying to disappear 
-		if (_pacmanPosition->X + _pacmanSourceRect->Width < 0)
-		{
-			// Pacman hit left wall - wrap around to right wall
-			_pacmanPosition->X = Graphics::GetViewportWidth() - _pacmanSourceRect->Width;
-		}
-
-		// Checks if Pacman is trying to disappear 
-		if (_pacmanPosition->Y > Graphics::GetViewportHeight())
-		{
-			// Pacman hit right wall - reset his position
-			_pacmanPosition->Y = 0;
-		}
-
-		// Checks if Pacman is trying to disappear 
-		if (_pacmanPosition->Y + _pacmanSourceRect->Height < 0)
-		{
-			// Pacman hit left wall - wrap around to right wall
-			_pacmanPosition->Y = Graphics::GetViewportHeight() - _pacmanSourceRect->Height;
 		}
 	}
 
+
+
+}
+
+
+void CheckViewportCollision(Vector2* _pacmanPosition, Rect* _pacmanSourceRect)
+{
+
+	// Checks if Pacman is trying to disappear 
+	if (_pacmanPosition->X > Graphics::GetViewportWidth())
+	{
+		// Pacman hit right wall - reset his position
+		_pacmanPosition->X = 0;
+	}
+	// Checks if Pacman is trying to disappear 
+	if (_pacmanPosition->X + _pacmanSourceRect->Width < 0)
+	{
+		// Pacman hit left wall - wrap around to right wall
+		_pacmanPosition->X = Graphics::GetViewportWidth() - _pacmanSourceRect->Width;
+	}
+
+	// Checks if Pacman is trying to disappear 
+	if (_pacmanPosition->Y > Graphics::GetViewportHeight())
+	{
+		// Pacman hit right wall - reset his position
+		_pacmanPosition->Y = 0;
+	}
+
+	// Checks if Pacman is trying to disappear 
+	if (_pacmanPosition->Y + _pacmanSourceRect->Height < 0)
+	{
+		// Pacman hit left wall - wrap around to right wall
+		_pacmanPosition->Y = Graphics::GetViewportHeight() - _pacmanSourceRect->Height;
+	}
+}
+
+void Pacman::Input(int elapsedTime, Input::KeyboardState* state)
+{
+	// Checks if D key is pressed
+	if (state->IsKeyDown(Input::Keys::D))
+	{
+		_pacmanPosition->X += _cPacmanSpeed * elapsedTime; //Moves Pacman across X axis
+		_pacmanDirection = 0;
+
+	}
+
+	// Checks if A key is pressed
+	if (state->IsKeyDown(Input::Keys::A))
+	{
+		_pacmanPosition->X -= _cPacmanSpeed * elapsedTime; //Moves Pacman across X axis
+		_pacmanDirection = 2;
+	}
+
+	// Checks if W key is pressed
+	if (state->IsKeyDown(Input::Keys::W))
+	{
+		_pacmanPosition->Y -= _cPacmanSpeed * elapsedTime; //Moves Pacman across Y axis
+		_pacmanDirection = 3;
+	}
+
+	// Checks if S key is pressed
+	if (state->IsKeyDown(Input::Keys::S))
+	{
+		_pacmanPosition->Y += _cPacmanSpeed * elapsedTime; //Moves Pacman across Y axis
+		_pacmanDirection = 1;
+	}
+}
+
+void CheckPaused(Input::KeyboardState* state, Input::Keys ,bool _paused, bool _startGame, bool _pKeyDown, int _pacmanDirection, Rect* _pacmanSourceRect)
+{
+
 	//When p is held down game should pause or unpause
-	if (keyboardState->IsKeyDown(Input::Keys::P) && !_pKeyDown)
+	if (state->IsKeyDown(Input::Keys::P) && !_pKeyDown)
 	{
 		_pKeyDown = true;
 		_paused = !_paused;
 	}
-	if (keyboardState->IsKeyUp(Input::Keys::P))
+	if (state->IsKeyUp(Input::Keys::P))
 		_pKeyDown = false;
-	
-	if (keyboardState->IsKeyDown(Input::Keys::SPACE))
-		_startGame = true;
+
+
 
 	_pacmanSourceRect->Y = _pacmanSourceRect->Height * _pacmanDirection;
 }
-
 
 void Pacman::Draw(int elapsedTime)
 {

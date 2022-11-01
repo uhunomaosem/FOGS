@@ -52,6 +52,19 @@ private:
 	bool _pKeyDown;
 	bool _startGame;
 
+	//Input methods 
+	void Input(int elapsedTime, Input::KeyboardState* state);
+
+
+	//Check methods
+	void CheckPaused(Input::KeyboardState* state, Input::Keys pauseKey);
+	void CheckViewportCollision();
+
+	//Update methods
+	void UpdatePacman(int elapsedTime);
+	void UpdateMunchie(int elapsedTime);
+
+
 public:
 	/// <summary> Constructs the Pacman class. </summary>
 	Pacman(int argc, char* argv[]);
