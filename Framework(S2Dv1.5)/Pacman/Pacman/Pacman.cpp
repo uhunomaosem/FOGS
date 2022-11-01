@@ -78,28 +78,9 @@ void Pacman::Update(int elapsedTime)
 		{
 			Input(elapsedTime, keyboardState);
 			CheckViewportCollision();
-			_pacmanCurrentFrameTime += elapsedTime;
-			if (_pacmanCurrentFrameTime > _cpacmanFrameTime)
-			{
-				_pacmanFrame++;
+			UpdatePacman(elapsedTime);
+			UpdateMunchie(elapsedTime);
 
-				if (_pacmanFrame >= 2)
-					_pacmanFrame = 0;
-
-				_pacmanCurrentFrameTime = 0;
-				_pacmanSourceRect->X = _pacmanSourceRect->Width * _pacmanFrame;
-			}
-
-			_munchieCurrentFrameTime += elapsedTime;
-			if (_munchieCurrentFrameTime > _cMunchieFrameTime)
-			{
-				_frameCount++;
-
-				if (_frameCount >= 2)
-					_frameCount = 0;
-
-				_munchieCurrentFrameTime = 0;
-			}
 
 
 		}
@@ -109,8 +90,35 @@ void Pacman::Update(int elapsedTime)
 
 }
 
+void Pacman::UpdatePacman(int elapsedTime, int _pacmanCurrentFrameTime, const int _cpacmanFrameTime, int _pacmanFrame, Rect* _pacmanSourceRect)
+{
+	_pacmanCurrentFrameTime += elapsedTime;
+	if (_pacmanCurrentFrameTime > _cpacmanFrameTime)
+	{
+		_pacmanFrame++;
 
-void CheckViewportCollision(Vector2* _pacmanPosition, Rect* _pacmanSourceRect)
+		if (_pacmanFrame >= 2)
+			_pacmanFrame = 0;
+
+		_pacmanCurrentFrameTime = 0;
+		_pacmanSourceRect->X = _pacmanSourceRect->Width * _pacmanFrame;
+	}
+}
+void Pacman::UpdateMunchie(int elapsedTime, int _munchieCurrentFrameTime, const int _cMunchieFrameTime, int _munchieFrame, Rect* _munchieSourceRect, int _frameCount)
+{
+	_munchieCurrentFrameTime += elapsedTime;
+	if (_munchieCurrentFrameTime > _cMunchieFrameTime)
+	{
+		_frameCount++;
+
+		if (_frameCount >= 2)
+			_frameCount = 0;
+
+		_munchieCurrentFrameTime = 0;
+	}
+}
+
+void Pacman::CheckViewportCollision(Vector2* _pacmanPosition, Rect* _pacmanSourceRect)
 {
 
 	// Checks if Pacman is trying to disappear 
@@ -173,7 +181,7 @@ void Pacman::Input(int elapsedTime, Input::KeyboardState* state)
 	}
 }
 
-void CheckPaused(Input::KeyboardState* state, Input::Keys ,bool _paused, bool _startGame, bool _pKeyDown, int _pacmanDirection, Rect* _pacmanSourceRect)
+void Pacman::CheckPaused(Input::KeyboardState* state, Input::Keys ,bool _paused, bool _startGame, bool _pKeyDown, int _pacmanDirection, Rect* _pacmanSourceRect)
 {
 
 	//When p is held down game should pause or unpause
