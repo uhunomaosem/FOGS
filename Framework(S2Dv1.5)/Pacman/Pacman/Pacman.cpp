@@ -1,13 +1,17 @@
 #include "Pacman.h"
 
 #include <sstream>
+#include <time.h>
 
 Pacman::Pacman(int argc, char* argv[]) : Game(argc, argv)
 {
+
+
+
 	_pacman = new Player();
 	_munchie = new Collect();
 	_pausenmain = new Menu();
-
+	
 
 	_pausenmain->paused = false;
 	_pausenmain->pKeyDown = false;
@@ -20,6 +24,14 @@ Pacman::Pacman(int argc, char* argv[]) : Game(argc, argv)
 	_munchie->currentFrameTime = 0;
 	_munchie->frame = 0;
 	_munchie->frameCount = 0;
+
+
+	for (int i = 0; i < MUNCHIECOUNT; i++)
+	{
+		_munchies[i] = new Collect();
+		_munchies[i]->currentFrameTime = 0;
+	}
+
 	//Initialise important Game aspects
 	Graphics::Initialise(argc, argv, this, 1024, 768, false, 25, 25, "Pacman", 60);
 	Input::Initialise();
@@ -53,12 +65,17 @@ void Pacman::LoadContent()
 	_pacman->position = new Vector2(350.0f, 350.0f);
 	_pacman->sourceRect = new Rect(0.0f, 0.0f, 32, 32);
 
-	// Load Munchie
-	_munchie->blueTexture = new Texture2D();
-	_munchie->blueTexture->Load("Textures/Munchie.tga", true);
-	_munchie->invertedTexture = new Texture2D();
-	_munchie->invertedTexture->Load("Textures/MunchieInverted.tga", true);
-	_munchie->rect = new Rect(100.0f, 450.0f, 12, 12);
+	int i;
+	for (i = 0; i < MUNCHIECOUNT; i++)
+	{
+		// Load Munchie
+		_munchie->blueTexture = new Texture2D();
+		_munchie->blueTexture->Load("Textures/Munchie.tga", true);
+		_munchie->invertedTexture = new Texture2D();
+		_munchie->invertedTexture->Load("Textures/MunchieInverted.tga", true);
+		_munchie->rect = new Rect(100.0f, 450.0f, 12, 12);
+	}
+
 
 	// Set string position
 	_pausenmain->cordstringPosition = new Vector2(10.0f, 25.0f);
@@ -68,10 +85,16 @@ void Pacman::LoadContent()
 	_pausenmain->background->Load("Textures/Transparency.png", false);
 	_pausenmain->rectangle = new Rect(0.0f, 0.0f, Graphics::GetViewportWidth(), Graphics::GetViewportWidth());
 	_pausenmain->stringPosition = new Vector2(Graphics::GetViewportWidth() / 2.0f, Graphics::GetViewportHeight() / 2.0f);
+
+
+	_munchies[i]->position = new Vector2((rand() % Graphics::GetViewportWidth()), (rand() % Graphics::GetViewportHeight()));
+
 }
+
 
 void Pacman::Update(int elapsedTime)
 {
+
 
 	// Gets the current state of the keyboard
 	Input::KeyboardState* keyboardState = Input::Keyboard::GetState();
@@ -90,7 +113,8 @@ void Pacman::Update(int elapsedTime)
 			Input(elapsedTime, keyboardState);
 			CheckViewportCollision();
 			UpdatePacman(elapsedTime);
-			UpdateMunchie(elapsedTime);
+				UpdateMunchie(elapsedTime);
+			
 
 
 
@@ -217,6 +241,29 @@ void Pacman::CheckPaused(Input::KeyboardState* state, Input::Keys pauseKey)
 
 void Pacman::Draw(int elapsedTime)
 {
+	int i;
+	for (i = 0; i < MUNCHIECOUNT; i++)
+	{
+		if (_munchie->frameCount == 0)
+		{
+			// Draws Red Munchie
+			SpriteBatch::Draw(_munchie->invertedTexture, _munchie->rect, nullptr, Vector2::Zero, 1.0f, 0.0f, Color::White, SpriteEffect::NONE);
+
+
+		}
+		else
+		{
+			// Draw Blue Munchie
+			SpriteBatch::Draw(_munchie->blueTexture, _munchie->rect, nullptr, Vector2::Zero, 1.0f, 0.0f, Color::White, SpriteEffect::NONE);
+
+
+
+			if (_munchie->frameCount >= 60)
+				_munchie->frameCount = 0;
+		}
+
+	}
+
 	// Allows us to easily create a string
 	std::stringstream stream;
 	stream << "Pacman X: " << _pacman->position->X << " Y: " << _pacman->position->Y;
@@ -224,23 +271,6 @@ void Pacman::Draw(int elapsedTime)
 	SpriteBatch::BeginDraw(); // Starts Drawing
 	SpriteBatch::Draw(_pacman->texture, _pacman->position, _pacman->sourceRect); // Draws Pacman
 
-	if (_munchie->frameCount == 0)
-	{
-		// Draws Red Munchie
-		SpriteBatch::Draw(_munchie->invertedTexture, _munchie->rect, nullptr, Vector2::Zero, 1.0f, 0.0f, Color::White, SpriteEffect::NONE);
-
-
-	}
-	else
-	{
-		// Draw Blue Munchie
-		SpriteBatch::Draw(_munchie->blueTexture, _munchie->rect, nullptr, Vector2::Zero, 1.0f, 0.0f, Color::White, SpriteEffect::NONE);
-
-
-
-		if (_munchie->frameCount >= 60)
-			_munchie->frameCount = 0;
-	}
 
 	
 	// Draws String
