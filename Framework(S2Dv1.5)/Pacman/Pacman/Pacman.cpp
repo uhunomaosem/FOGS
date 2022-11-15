@@ -9,9 +9,14 @@ Pacman::Pacman(int argc, char* argv[]) : Game(argc, argv)
 
 
 	_pacman = new Player();
-	_munchie = new Collect();
 	_pausenmain = new Menu();
-	
+	for (int i = 0; i < MUNCHIECOUNT; ++i)
+	{
+		_munchies[i] = new Collect();
+		_munchies[i]->currentFrameTime = 0;
+		_munchies[i]->frame = 0;
+		_munchies[i]->frameCount = 0;
+	}
 
 	_pausenmain->paused = false;
 	_pausenmain->pKeyDown = false;
@@ -21,16 +26,9 @@ Pacman::Pacman(int argc, char* argv[]) : Game(argc, argv)
 	_pacman->frame = 0;
 
 
-	_munchie->currentFrameTime = 0;
-	_munchie->frame = 0;
-	_munchie->frameCount = 0;
 
 
-	for (int i = 0; i < MUNCHIECOUNT; i++)
-	{
-		_munchies[i] = new Collect();
-		_munchies[i]->currentFrameTime = 0;
-	}
+
 
 	//Initialise important Game aspects
 	Graphics::Initialise(argc, argv, this, 1024, 768, false, 25, 25, "Pacman", 60);
@@ -42,9 +40,14 @@ Pacman::Pacman(int argc, char* argv[]) : Game(argc, argv)
 
 Pacman::~Pacman()
 {
-	delete _munchie->blueTexture;
-	delete _munchie->invertedTexture;
-	delete _munchie->rect;
+	int i;
+	for (i = 0; i < MUNCHIECOUNT; ++i)
+	{
+		delete _munchies[i]->blueTexture;
+		delete _munchies[i]->invertedTexture;
+		delete _munchies[i]->rect;
+		delete _munchies[i];
+	}
 	delete _pausenmain->background;
 	delete _pausenmain->rectangle;
 	delete _pausenmain->stringPosition;
@@ -52,7 +55,6 @@ Pacman::~Pacman()
 	delete _pacman->position;
 	delete _pacman->sourceRect;
 	delete _pausenmain;
-	delete _munchie;
 	delete _pacman;
 
 }
@@ -66,14 +68,15 @@ void Pacman::LoadContent()
 	_pacman->sourceRect = new Rect(0.0f, 0.0f, 32, 32);
 
 	int i;
-	for (i = 0; i < MUNCHIECOUNT; i++)
+	for (i = 0; i < MUNCHIECOUNT; ++i)
 	{
 		// Load Munchie
-		_munchie->blueTexture = new Texture2D();
-		_munchie->blueTexture->Load("Textures/Munchie.tga", true);
-		_munchie->invertedTexture = new Texture2D();
-		_munchie->invertedTexture->Load("Textures/MunchieInverted.tga", true);
-		_munchie->rect = new Rect(100.0f, 450.0f, 12, 12);
+		_munchies[i]->blueTexture = new Texture2D();
+		_munchies[i]->blueTexture->Load("Textures/Munchie.tga", true);
+		_munchies[i]->invertedTexture = new Texture2D();
+		_munchies[i]->invertedTexture->Load("Textures/MunchieInverted.tga", true);
+		_munchies[i]->rect = new Rect(100.0f, 450.0f, 12, 12);
+	//	_munchies[i]->position = new Vector2((rand() % Graphics::GetViewportWidth()), (rand() % Graphics::GetViewportHeight()));
 	}
 
 
@@ -87,7 +90,7 @@ void Pacman::LoadContent()
 	_pausenmain->stringPosition = new Vector2(Graphics::GetViewportWidth() / 2.0f, Graphics::GetViewportHeight() / 2.0f);
 
 
-	_munchies[i]->position = new Vector2((rand() % Graphics::GetViewportWidth()), (rand() % Graphics::GetViewportHeight()));
+	
 
 }
 
@@ -113,7 +116,8 @@ void Pacman::Update(int elapsedTime)
 			Input(elapsedTime, keyboardState);
 			CheckViewportCollision();
 			UpdatePacman(elapsedTime);
-				UpdateMunchie(elapsedTime);
+			UpdateMunchie(elapsedTime);
+			
 			
 
 
@@ -144,16 +148,21 @@ void Pacman::UpdatePacman(int elapsedTime)
 //Update animation for Munchie
 void Pacman::UpdateMunchie(int elapsedTime)
 {
-	_munchie->currentFrameTime += elapsedTime;
-	if (_munchie->currentFrameTime > _munchie->frameTime)
+	int i;
+	for (i = 0; i < MUNCHIECOUNT; ++i)
 	{
-		_munchie->frameCount++;
+		_munchies[i]->currentFrameTime += elapsedTime;
+		if (_munchies[i]->currentFrameTime > _munchies[i]->frameTime)
+		{
+			_munchies[i]->frameCount++;
 
-		if (_munchie->frameCount >= 2)
-			_munchie->frameCount = 0;
+			if (_munchies[i]->frameCount >= 2)
+				_munchies[i]->frameCount = 0;
 
-		_munchie->currentFrameTime = 0;
+			_munchies[i]->currentFrameTime = 0;
+		}
 	}
+
 }
 
 //Check for collision on any wall 
@@ -241,25 +250,25 @@ void Pacman::CheckPaused(Input::KeyboardState* state, Input::Keys pauseKey)
 
 void Pacman::Draw(int elapsedTime)
 {
-	int i;
-	for (i = 0; i < MUNCHIECOUNT; i++)
+	
+	for (int i = 0; i < MUNCHIECOUNT; ++i)
 	{
-		if (_munchie->frameCount == 0)
+		if (_munchies[i]->frameCount == 0)
 		{
 			// Draws Red Munchie
-			SpriteBatch::Draw(_munchie->invertedTexture, _munchie->rect, nullptr, Vector2::Zero, 1.0f, 0.0f, Color::White, SpriteEffect::NONE);
+			SpriteBatch::Draw(_munchies[i]->invertedTexture, _munchies[i]->rect, nullptr, Vector2::Zero, 1.0f, 0.0f, Color::White, SpriteEffect::NONE);
 
 
 		}
 		else
 		{
 			// Draw Blue Munchie
-			SpriteBatch::Draw(_munchie->blueTexture, _munchie->rect, nullptr, Vector2::Zero, 1.0f, 0.0f, Color::White, SpriteEffect::NONE);
+			SpriteBatch::Draw(_munchies[i]->blueTexture, _munchies[i]->rect, nullptr, Vector2::Zero, 1.0f, 0.0f, Color::White, SpriteEffect::NONE);
 
 
 
-			if (_munchie->frameCount >= 60)
-				_munchie->frameCount = 0;
+			if (_munchies[i]->frameCount >= 60)
+				_munchies[i]->frameCount = 0;
 		}
 
 	}

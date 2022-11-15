@@ -95,7 +95,6 @@ private:
 	//bool _startGame;
 
 	Player* _pacman;
-	Collect* _munchie;
 	Collect* _munchies[MUNCHIECOUNT];
 	Menu* _pausenmain;
 
