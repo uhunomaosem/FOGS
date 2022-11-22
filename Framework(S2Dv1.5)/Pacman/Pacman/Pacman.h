@@ -39,6 +39,7 @@ struct Collect
 	Texture2D* invertedTexture;
 	Vector2* position;
 	const int frameTime = 600;
+	Texture2D* cMunchie;
 };
 
 struct Menu

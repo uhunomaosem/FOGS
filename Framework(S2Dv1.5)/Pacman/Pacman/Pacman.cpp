@@ -72,9 +72,10 @@ void Pacman::LoadContent()
 	{
 		// Load Munchie
 		_munchies[i]->blueTexture = new Texture2D();
-		_munchies[i]->blueTexture->Load("Textures/Munchie.tga", true);
+		/*_munchies[i]->blueTexture->Load("Textures/Munchie.tga", true);*/
 		_munchies[i]->invertedTexture = new Texture2D();
-		_munchies[i]->invertedTexture->Load("Textures/MunchieInverted.tga", true);
+		/*_munchies[i]->invertedTexture->Load("Textures/MunchieInverted.tga", true);*/
+		_munchies[i]->cMunchie->Load("Textures/AllMunchie.tga", true);
 		_munchies[i]->rect = new Rect(100.0f, 450.0f, 12, 12);
 	//	_munchies[i]->position = new Vector2((rand() % Graphics::GetViewportWidth()), (rand() % Graphics::GetViewportHeight()));
 	}
@@ -250,34 +251,36 @@ void Pacman::CheckPaused(Input::KeyboardState* state, Input::Keys pauseKey)
 
 void Pacman::Draw(int elapsedTime)
 {
-	
-	for (int i = 0; i < MUNCHIECOUNT; ++i)
-	{
-		if (_munchies[i]->frameCount == 0)
-		{
-			// Draws Red Munchie
-			SpriteBatch::Draw(_munchies[i]->invertedTexture, _munchies[i]->rect, nullptr, Vector2::Zero, 1.0f, 0.0f, Color::White, SpriteEffect::NONE);
+	SpriteBatch::BeginDraw(); // Starts Drawing
+
+	//for (int i = 0; i < MUNCHIECOUNT; ++i)
+	//{
+	//	if (_munchies[i]->frameCount == 0)
+	//	{
+	//		// Draws Red Munchie
+	//		SpriteBatch::Draw(_munchies[i]->cMunchie, _munchies[i]->rect, nullptr, Vector2::Zero, 1.0f, 0.0f, Color::White, SpriteEffect::NONE);
 
 
-		}
-		else
-		{
-			// Draw Blue Munchie
-			SpriteBatch::Draw(_munchies[i]->blueTexture, _munchies[i]->rect, nullptr, Vector2::Zero, 1.0f, 0.0f, Color::White, SpriteEffect::NONE);
+	//	}
+	//	else
+	//	{
+	//		// Draw Blue Munchie
+	//		SpriteBatch::Draw(_munchies[i]->blueTexture, _munchies[i]->rect, nullptr, Vector2::Zero, 1.0f, 0.0f, Color::White, SpriteEffect::NONE);
 
 
+	//		if (_munchies[i]->frameCount >= 60)
+	//			_munchies[i]->frameCount = 0;
+	//	}
 
-			if (_munchies[i]->frameCount >= 60)
-				_munchies[i]->frameCount = 0;
-		}
+	//}
 
-	}
+
 
 	// Allows us to easily create a string
 	std::stringstream stream;
 	stream << "Pacman X: " << _pacman->position->X << " Y: " << _pacman->position->Y;
 
-	SpriteBatch::BeginDraw(); // Starts Drawing
+
 	SpriteBatch::Draw(_pacman->texture, _pacman->position, _pacman->sourceRect); // Draws Pacman
 
 
