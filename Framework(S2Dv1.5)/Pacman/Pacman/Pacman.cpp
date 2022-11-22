@@ -76,8 +76,8 @@ void Pacman::LoadContent()
 		/*_munchies[i]->invertedTexture = new Texture2D();*/
 		/*_munchies[i]->invertedTexture->Load("Textures/MunchieInverted.tga", true);*/
 		_munchies[i]->cMunchie = new Texture2D();
-		_munchies[i]->cMunchie->Load("Textures/AllMunchies.tga", false);
-		_munchies[i]->rect = new Rect(100.0f, 450.0f, 12, 12);
+		_munchies[i]->cMunchie->Load("Textures/AllMunchies.png", false);
+		_munchies[i]->rect = new Rect(0.0f, 0.0f, 12, 12);
 		_munchies[i]->position = new Vector2((rand() % Graphics::GetViewportWidth()), (rand() % Graphics::GetViewportHeight()));
 	}
 
@@ -150,18 +150,18 @@ void Pacman::UpdatePacman(int elapsedTime)
 //Update animation for Munchie
 void Pacman::UpdateMunchie(int elapsedTime)
 {
-	int i;
-	for (i = 0; i < MUNCHIECOUNT; ++i)
+	for (int i = 0; i < MUNCHIECOUNT; ++i)
 	{
 		_munchies[i]->currentFrameTime += elapsedTime;
 		if (_munchies[i]->currentFrameTime > _munchies[i]->frameTime)
 		{
-			_munchies[i]->frameCount++;
+			_munchies[i]->frame++;
 
-			if (_munchies[i]->frameCount >= 2)
-				_munchies[i]->frameCount = 0;
+			if (_munchies[i]->frame >= 2)
+				_munchies[i]->frame = 0;
 
 			_munchies[i]->currentFrameTime = 0;
+			_munchies[i]->rect->X = _munchies[i]->rect->Width * _munchies[i]->frame;
 		}
 	}
 
@@ -281,6 +281,7 @@ void Pacman::Draw(int elapsedTime)
 	std::stringstream stream;
 	stream << "Pacman X: " << _pacman->position->X << " Y: " << _pacman->position->Y;
 
+	//draws munchies
 	for (int i = 0; i < MUNCHIECOUNT; ++i)
 	{
 		SpriteBatch::Draw(_munchies[i]->cMunchie, _munchies[i]->position, _munchies[i]->rect);
