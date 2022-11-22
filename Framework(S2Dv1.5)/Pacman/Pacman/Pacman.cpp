@@ -10,6 +10,7 @@ Pacman::Pacman(int argc, char* argv[]) : Game(argc, argv)
 
 	_pacman = new Player();
 	_pausenmain = new Menu();
+	_cherry = new Collect();
 	for (int i = 0; i < MUNCHIECOUNT; ++i)
 	{
 		_munchies[i] = new Collect();
@@ -24,7 +25,7 @@ Pacman::Pacman(int argc, char* argv[]) : Game(argc, argv)
 	_pacman->direction = 0;
 	_pacman->currentFrameTime = 0;
 	_pacman->frame = 0;
-
+	_pacman->speedMultiplier = 2.0f;
 
 
 
@@ -81,6 +82,13 @@ void Pacman::LoadContent()
 		_munchies[i]->position = new Vector2((rand() % Graphics::GetViewportWidth()), (rand() % Graphics::GetViewportHeight()));
 	}
 
+	//Load cherry
+	_cherry->cMunchie = new Texture2D();
+	_cherry->cMunchie->Load("Textures/Cherry.png", false);
+	_cherry->position = new Vector2(350.0f, 350.0f);
+	_cherry->rect = new Rect(100.0f, 350.0f, 32, 32);
+
+
 
 	// Set string position
 	_pausenmain->cordstringPosition = new Vector2(10.0f, 25.0f);
@@ -104,6 +112,10 @@ void Pacman::Update(int elapsedTime)
 	// Gets the current state of the keyboard
 	Input::KeyboardState* keyboardState = Input::Keyboard::GetState();
 
+	//Gets the current state of the mouse
+	Input::MouseState* mouseState = Input::Mouse::GetState();
+
+
 	if (!_pausenmain->startGame)
 	{
 		//Check for start
@@ -115,10 +127,11 @@ void Pacman::Update(int elapsedTime)
 		CheckPaused(keyboardState, Input::Keys::P);
 		if (!_pausenmain->paused)
 		{
-			Input(elapsedTime, keyboardState);
+			Input(elapsedTime, keyboardState,mouseState);
 			CheckViewportCollision();
 			UpdatePacman(elapsedTime);
 			UpdateMunchie(elapsedTime);
+			UpdateCherry(elapsedTime);
 			
 			
 
@@ -167,6 +180,27 @@ void Pacman::UpdateMunchie(int elapsedTime)
 
 }
 
+//Update animation for cherry
+void Pacman::UpdateCherry(int elapsedTime)
+{
+	_cherry->currentFrameTime += elapsedTime;
+	if (_cherry->currentFrameTime > _cherry->frameTime)
+	{
+		_cherry->frame++;
+
+		if (_cherry->frame >= 2)
+			_cherry->frame = 0;
+
+		_cherry->currentFrameTime = 0;
+		_cherry->rect->X = _cherry->rect->Width * _cherry->frame;
+	}
+}
+
+
+
+
+
+
 //Check for collision on any wall 
 void Pacman::CheckViewportCollision()
 {
@@ -199,7 +233,7 @@ void Pacman::CheckViewportCollision()
 }
 
 //Check for any inputs for movement
-void Pacman::Input(int elapsedTime, Input::KeyboardState* state)
+void Pacman::Input(int elapsedTime, Input::KeyboardState* state, Input::MouseState*mouseState)
 {
 	// Checks if D key is pressed
 	if (state->IsKeyDown(Input::Keys::D))
@@ -212,7 +246,7 @@ void Pacman::Input(int elapsedTime, Input::KeyboardState* state)
 	// Checks if A key is pressed
 	if (state->IsKeyDown(Input::Keys::A))
 	{
-		_pacman->position->X -= _pacman->speed * elapsedTime; //Moves Pacman across X axis
+		_pacman->position->X -= _pacman->speed * elapsedTime  * _pacman->speedMultiplier; //Moves Pacman across X axis
 		_pacman->direction = 2;
 	}
 
@@ -230,6 +264,22 @@ void Pacman::Input(int elapsedTime, Input::KeyboardState* state)
 		_pacman->direction = 1;
 	}
 	_pacman->sourceRect->Y = _pacman->sourceRect->Height * _pacman->direction;
+
+
+	mouseState->LeftButton;
+
+	// Handle Mouse Input – Reposition Cherry 
+	if (mouseState->LeftButton == Input::ButtonState::PRESSED)
+	{
+		_cherry->position->X = mouseState->X;
+		_cherry->position->Y = mouseState->Y;
+	}
+
+
+
+
+
+
 }
 
 //Check if user ever press P 
@@ -254,25 +304,19 @@ void Pacman::Draw(int elapsedTime)
 {
 	SpriteBatch::BeginDraw(); // Starts Drawing
 
-	//for (int i = 0; i < MUNCHIECOUNT; ++i)
+	//if (_cherry->frameCount == 0)
 	//{
-	//	if (_munchies[i]->frameCount == 0)
-	//	{
-	//		// Draws Red Munchie
-	//		SpriteBatch::Draw(_munchies[i]->cMunchie, _munchies[i]->rect, nullptr, Vector2::Zero, 1.0f, 0.0f, Color::White, SpriteEffect::NONE);
+	//	// Draws Red Cherry
+	//	SpriteBatch::Draw(_cherry->cMunchie, _cherry->rect, nullptr, Vector2::Zero, 1.0f, 0.0f, Color::White, SpriteEffect::NONE);
+	//}
+	//else
+	//{
+	//	// Draw Blue Cherry
+	//	SpriteBatch::Draw(_cherry->cMunchie, _cherry->rect, nullptr, Vector2::Zero, 1.0f, 0.0f, Color::White, SpriteEffect::NONE);
 
 
-	//	}
-	//	else
-	//	{
-	//		// Draw Blue Munchie
-	//		SpriteBatch::Draw(_munchies[i]->blueTexture, _munchies[i]->rect, nullptr, Vector2::Zero, 1.0f, 0.0f, Color::White, SpriteEffect::NONE);
-
-
-	//		if (_munchies[i]->frameCount >= 60)
-	//			_munchies[i]->frameCount = 0;
-	//	}
-
+	//	if (_cherry->frameCount >= 60)
+	//		_cherry->frameCount = 0;
 	//}
 
 
@@ -290,7 +334,7 @@ void Pacman::Draw(int elapsedTime)
 
 	SpriteBatch::Draw(_pacman->texture, _pacman->position, _pacman->sourceRect); // Draws Pacman
 
-
+	SpriteBatch::Draw(_cherry->cMunchie, _cherry->position, _cherry->rect); // Draws Cherry
 	
 	// Draws String
 	SpriteBatch::DrawString(stream.str().c_str(), _pausenmain->cordstringPosition, Color::Green);

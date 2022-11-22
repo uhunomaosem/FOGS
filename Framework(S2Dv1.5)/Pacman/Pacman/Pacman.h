@@ -26,7 +26,6 @@ struct Player
 	Vector2* position;
 	const int frameTime = 160;
 	const float speed = 0.1f;
-
 };
 
 struct Collect
@@ -98,9 +97,10 @@ private:
 	Player* _pacman;
 	Collect* _munchies[MUNCHIECOUNT];
 	Menu* _pausenmain;
+	Collect* _cherry;
 
 	//Input methods 
-	void Input(int elapsedTime, Input::KeyboardState* state);
+	void Input(int elapsedTime, Input::KeyboardState* state, Input::MouseState*mouseState);
 
 
 	//Check methods
@@ -110,6 +110,7 @@ private:
 	//Update methods
 	void UpdatePacman(int elapsedTime);
 	void UpdateMunchie(int elapsedTime);
+	void UpdateCherry(int elapsedTime);
 
 
 public:
