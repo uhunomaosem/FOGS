@@ -25,7 +25,7 @@ Pacman::Pacman(int argc, char* argv[]) : Game(argc, argv)
 	_pacman->direction = 0;
 	_pacman->currentFrameTime = 0;
 	_pacman->frame = 0;
-	_pacman->speedMultiplier = 2.0f;
+	_pacman->speedMultiplier = 1.0f;
 
 
 
@@ -238,7 +238,7 @@ void Pacman::Input(int elapsedTime, Input::KeyboardState* state, Input::MouseSta
 	// Checks if D key is pressed
 	if (state->IsKeyDown(Input::Keys::D))
 	{
-		_pacman->position->X += _pacman->speed * elapsedTime; //Moves Pacman across X axis
+		_pacman->position->X += _pacman->speed * elapsedTime * _pacman->speedMultiplier; //Moves Pacman across X axis
 		_pacman->direction = 0;
 
 	}
@@ -253,18 +253,29 @@ void Pacman::Input(int elapsedTime, Input::KeyboardState* state, Input::MouseSta
 	// Checks if W key is pressed
 	if (state->IsKeyDown(Input::Keys::W))
 	{
-		_pacman->position->Y -= _pacman->speed * elapsedTime; //Moves Pacman across Y axis
+		_pacman->position->Y -= _pacman->speed * elapsedTime * _pacman->speedMultiplier; //Moves Pacman across Y axis
 		_pacman->direction = 3;
 	}
 
 	// Checks if S key is pressed
 	if (state->IsKeyDown(Input::Keys::S))
 	{
-		_pacman->position->Y += _pacman->speed * elapsedTime; //Moves Pacman across Y axis
+		_pacman->position->Y += _pacman->speed * elapsedTime * _pacman->speedMultiplier; //Moves Pacman across Y axis
 		_pacman->direction = 1;
 	}
 	_pacman->sourceRect->Y = _pacman->sourceRect->Height * _pacman->direction;
 
+	//Speed Multiplier 
+	if (state->IsKeyDown(Input::Keys::LEFTSHIFT))
+	{
+		//Apply multiplier 
+		_pacman->speedMultiplier = 2.0f;
+	}
+	else
+	{
+		//Reset multiplier 
+		_pacman->speedMultiplier = 1.0f;
+	}
 
 	mouseState->LeftButton;
 
