@@ -11,7 +11,13 @@ Pacman::Pacman(int argc, char* argv[]) : Game(argc, argv)
 	_pacman = new Player();
 	_pausenmain = new Menu();
 	_cherry = new Collect();
-	_ghost = new Enemy();
+	for (int i = 0; i < GHOSTCOUNT; ++i)
+	{
+		_ghost[i] = new Enemy();
+		_ghost[i]->direction = 0;
+		_ghost[i]->speed = 0.2f;
+	}
+	
 
 	for (int i = 0; i < MUNCHIECOUNT; ++i)
 	{
@@ -21,14 +27,16 @@ Pacman::Pacman(int argc, char* argv[]) : Game(argc, argv)
 		_munchies[i]->frameCount = 0;
 	}
 
+	//pausemenu
 	_pausenmain->paused = false;
 	_pausenmain->pKeyDown = false;
 	_pausenmain->startGame = false;
+	//pacman
 	_pacman->direction = 0;
 	_pacman->currentFrameTime = 0;
 	_pacman->frame = 0;
 	_pacman->speedMultiplier = 1.0f;
-
+	_pacman->dead = false;
 
 
 
@@ -43,8 +51,8 @@ Pacman::Pacman(int argc, char* argv[]) : Game(argc, argv)
 
 Pacman::~Pacman()
 {
-	int i;
-	for (i = 0; i < MUNCHIECOUNT; ++i)
+	
+	for (int i = 0; i < MUNCHIECOUNT; ++i)
 	{
 		delete _munchies[i]->blueTexture;
 		delete _munchies[i]->invertedTexture;
@@ -102,7 +110,12 @@ void Pacman::LoadContent()
 	_pausenmain->stringPosition = new Vector2(Graphics::GetViewportWidth() / 2.0f, Graphics::GetViewportHeight() / 2.0f);
 
 
-	
+	//Initialise ghost character
+	_ghosts[0]->texture = new Texture2D();
+	_ghosts[0]->texture->Load("Textures / GhostBlue.png", false);
+	_ghosts[0]->position = new Vector2((rand() % Graphics::GetViewportWidth()), (rand() % Graphics::GetViewportHeight()));
+	_ghosts[0]->sourceRect = new Rect(0.0f, 0.0f, 20, 20);
+
 
 }
 
@@ -118,7 +131,7 @@ void Pacman::Update(int elapsedTime)
 	Input::MouseState* mouseState = Input::Mouse::GetState();
 
 
-	if (!_pausenmain->startGame)
+	if (!_pausenmain->startGame && !_pacman->dead)
 	{
 		//Check for start
 		if (keyboardState->IsKeyDown(Input::Keys::SPACE))

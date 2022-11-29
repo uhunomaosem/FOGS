@@ -27,6 +27,7 @@ struct Player
 	Vector2* position;
 	const int frameTime = 160;
 	const float speed = 0.1f;
+	bool dead;
 };
 
 struct Collect
