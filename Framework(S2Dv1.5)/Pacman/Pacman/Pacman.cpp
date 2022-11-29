@@ -11,6 +11,8 @@ Pacman::Pacman(int argc, char* argv[]) : Game(argc, argv)
 	_pacman = new Player();
 	_pausenmain = new Menu();
 	_cherry = new Collect();
+	_ghost = new Enemy();
+
 	for (int i = 0; i < MUNCHIECOUNT; ++i)
 	{
 		_munchies[i] = new Collect();

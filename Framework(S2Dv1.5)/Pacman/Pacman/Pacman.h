@@ -8,6 +8,7 @@
 	#endif
 #endif
 #define MUNCHIECOUNT 50
+#define GHOSTCOUNT 1
 // Just need to include main header file
 #include "S2D/S2D.h"
 
@@ -52,6 +53,14 @@ struct Menu
 	Vector2* cordstringPosition;
 };
 
+struct Enemy
+{
+	Vector2* position;
+	Texture2D* texture;
+	Rect* sourceRect;
+	int direction;
+	float speed;
+};
 
 
 
@@ -98,6 +107,7 @@ private:
 	Collect* _munchies[MUNCHIECOUNT];
 	Menu* _pausenmain;
 	Collect* _cherry;
+	Enemy* _ghost[GHOSTCOUNT];
 
 	//Input methods 
 	void Input(int elapsedTime, Input::KeyboardState* state, Input::MouseState*mouseState);
@@ -106,12 +116,14 @@ private:
 	//Check methods
 	void CheckPaused(Input::KeyboardState* state, Input::Keys pauseKey);
 	void CheckViewportCollision();
+	void CheckGhostCollisions();
+
 
 	//Update methods
 	void UpdatePacman(int elapsedTime);
 	void UpdateMunchie(int elapsedTime);
 	void UpdateCherry(int elapsedTime);
-
+	void UpdateGhost(Enemy*, int elapsedTime);
 
 public:
 	/// <summary> Constructs the Pacman class. </summary>
@@ -128,4 +140,6 @@ public:
 
 	/// <summary> Called every frame - draw game here. </summary>
 	void virtual Draw(int elapsedTime);
+
+
 };
