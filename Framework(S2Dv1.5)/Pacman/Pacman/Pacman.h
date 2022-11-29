@@ -8,7 +8,7 @@
 	#endif
 #endif
 #define MUNCHIECOUNT 50
-#define GHOSTCOUNT 1
+#define GHOSTCOUNT 32
 // Just need to include main header file
 #include "S2D/S2D.h"
 
@@ -115,7 +115,7 @@ private:
 
 
 	//Check methods
-	void CheckPaused(Input::KeyboardState* state, Input::Keys pauseKey);
+	void CheckPaused(Input::KeyboardState* state);
 	void CheckViewportCollision();
 	void CheckGhostCollisions();
 
@@ -124,7 +124,7 @@ private:
 	void UpdatePacman(int elapsedTime);
 	void UpdateMunchie(int elapsedTime);
 	void UpdateCherry(int elapsedTime);
-	void UpdateGhost(Enemy*, int elapsedTime);
+	void UpdateGhost(int elapsedTime);
 
 public:
 	/// <summary> Constructs the Pacman class. </summary>
