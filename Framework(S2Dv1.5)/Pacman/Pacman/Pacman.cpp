@@ -230,27 +230,47 @@ void Pacman::UpdateGhost(int elapsedTime)
 		if (_ghost[i]->direction == 0) //Moves Right 
 		{
 			_ghost[i]->position->X += _ghost[i]->speed * elapsedTime;
+
 		}
-		else if (_ghost[i]->direction == 1) //Moves Left 
+		else if (_ghost[i]->direction == 2) //Moves Left 
 		{
 			_ghost[i]->position->X -= _ghost[i]->speed * elapsedTime;
+			
 		}
+
 
 		if (_ghost[i]->position->X + _ghost[i]->sourceRect->Width >=
 			Graphics::GetViewportWidth()) //Hits Right edge 
 		{
-			_ghost[i]->direction = 1; //Change direction 
+			_ghost[i]->direction = 2; //Change direction 
 		}
+		
 		else if (_ghost[i]->position->X <= 0) //Hits left edge 
 		{
 			_ghost[i]->direction = 0; //Change direction 
 		}
+		_ghost[i]->sourceRect->Y = _ghost[i]->sourceRect->Height * _ghost[i]->direction;
+
+		_ghost[i]->currentFrameTime += elapsedTime;
+		if (_ghost[i]->currentFrameTime > _ghost[i]->frameTime)
+		{
+			_ghost[i]->frame++;
+
+			if (_ghost[i]->frame >= 2)
+				_ghost[i]->frame = 0;
+
+			_ghost[i]->currentFrameTime = 0;
+			_ghost[i]->sourceRect->X = _ghost[i]->sourceRect->Width * _ghost[i]->frame;
+		}
+
+
+
 	}
 
 }
 
 
-void Pacman::CheckGhostCollisions()
+bool Pacman::CheckGhostCollisions()
 {
 	// Local Variables
 	int i = 0;
@@ -278,6 +298,7 @@ void Pacman::CheckGhostCollisions()
 		{
 			_pacman->dead = true;
 			i = GHOSTCOUNT;
+			return true;
 		}
 	}
 

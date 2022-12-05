@@ -61,6 +61,10 @@ struct Enemy
 	Rect* sourceRect;
 	int direction;
 	float speed;
+	int frame;
+	int currentFrameTime;
+	int frameCount;
+	const int frameTime = 160;
 };
 
 
@@ -117,7 +121,7 @@ private:
 	//Check methods
 	void CheckPaused(Input::KeyboardState* state);
 	void CheckViewportCollision();
-	void CheckGhostCollisions();
+	bool CheckGhostCollisions();
 
 
 	//Update methods
