@@ -175,7 +175,7 @@ void Pacman::Update(int elapsedTime)
 		
 		if (!_pausenmain->paused)
 		{
-			Audio::Play(_bgm);
+			bool Play(_bgm);
 			Input(elapsedTime, keyboardState,mouseState);
 			CheckViewportCollision();
 			UpdatePacman(elapsedTime);
