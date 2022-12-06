@@ -124,7 +124,7 @@ void Pacman::LoadContent()
 	for (int i = 0; i < GHOSTCOUNT; ++i)
 	{
 		_ghost[i]->texture = new Texture2D();
-		_ghost[i]->texture->Load("Textures/GhostBlue.png", false);
+		_ghost[i]->texture->Load("Textures/AllGhost.tga", false);
 		_ghost[i]->position = new Vector2((rand() % Graphics::GetViewportWidth()), (rand() % Graphics::GetViewportHeight()));
 		_ghost[i]->sourceRect = new Rect(0.0f, 0.0f, 20, 20);
 	}
@@ -251,17 +251,17 @@ void Pacman::UpdateGhost(int elapsedTime)
 		}
 		_ghost[i]->sourceRect->Y = _ghost[i]->sourceRect->Height * _ghost[i]->direction;
 
-		_ghost[i]->currentFrameTime += elapsedTime;
-		if (_ghost[i]->currentFrameTime > _ghost[i]->frameTime)
-		{
-			_ghost[i]->frame++;
+		//_ghost[i]->currentFrameTime += elapsedTime;
+		//if (_ghost[i]->currentFrameTime > _ghost[i]->frameTime)
+		//{
+		//	_ghost[i]->frame++;
 
-			if (_ghost[i]->frame >= 2)
-				_ghost[i]->frame = 0;
+		//	if (_ghost[i]->frame >= 2)
+		//		_ghost[i]->frame = 0;
 
-			_ghost[i]->currentFrameTime = 0;
-			_ghost[i]->sourceRect->X = _ghost[i]->sourceRect->Width * _ghost[i]->frame;
-		}
+		//	_ghost[i]->currentFrameTime = 0;
+		//	_ghost[i]->sourceRect->X = _ghost[i]->sourceRect->Width * _ghost[i]->frame;
+		//}
 
 
 
