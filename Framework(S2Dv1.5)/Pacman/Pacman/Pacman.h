@@ -112,7 +112,7 @@ private:
 
 
 	Player* _pacman;
-	Collect** _munchies;
+	Collect* _munchies;
 	Menu* _pausenmain;
 	Collect* _cherry;
 	Enemy* _ghost[GHOSTCOUNT];

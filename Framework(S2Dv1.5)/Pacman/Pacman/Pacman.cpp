@@ -7,12 +7,12 @@
 Pacman::Pacman(int argc, char* argv[]) : Game(argc, argv)
 {
 
-	int munchieCount = 4;
-	//std::cout << "Enter how many munchies you want" << std::endl;
-	//std::cin >> munchieCount;
+	int munchieCount;
+	std::cout << "Enter how many munchies you want" << std::endl;
+	std::cin >> munchieCount;
 
 
-	_munchies = new Collect*[munchieCount];
+	_munchies = new Collect[munchieCount];
 	_pacman = new Player();
 	_pausenmain = new Menu();
 	_cherry = new Collect();
