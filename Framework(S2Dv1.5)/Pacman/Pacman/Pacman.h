@@ -7,7 +7,7 @@
 		#pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
 	#endif
 #endif
-#define MUNCHIECOUNT 50
+#define MUNCHIECOUNT 5
 #define GHOSTCOUNT 32
 // Just need to include main header file
 #include "S2D/S2D.h"
@@ -41,6 +41,7 @@ struct Collect
 	Vector2* position;
 	const int frameTime = 600;
 	Texture2D* cMunchie;
+	int munchieCount;
 };
 
 struct Menu
@@ -108,8 +109,10 @@ private:
 	//bool _pKeyDown;
 	//bool _startGame;
 
+
+
 	Player* _pacman;
-	Collect* _munchies[MUNCHIECOUNT];
+	Collect** _munchies;
 	Menu* _pausenmain;
 	Collect* _cherry;
 	Enemy* _ghost[GHOSTCOUNT];

@@ -7,8 +7,12 @@
 Pacman::Pacman(int argc, char* argv[]) : Game(argc, argv)
 {
 
-	
+	int munchieCount = 4;
+	//std::cout << "Enter how many munchies you want" << std::endl;
+	//std::cin >> munchieCount;
 
+
+	_munchies = new Collect*[munchieCount];
 	_pacman = new Player();
 	_pausenmain = new Menu();
 	_cherry = new Collect();
@@ -24,9 +28,10 @@ Pacman::Pacman(int argc, char* argv[]) : Game(argc, argv)
 	}
 	
 
-	for (int i = 0; i < MUNCHIECOUNT; ++i)
+
+	for (int i = 0; i < munchieCount; ++i)
 	{
-		_munchies[i] = new Collect();
+		/*_munchies[i] = new Collect();*/
 		_munchies[i]->currentFrameTime = 0;
 		_munchies[i]->frame = 0;
 		_munchies[i]->frameCount = 0;
@@ -43,13 +48,16 @@ Pacman::Pacman(int argc, char* argv[]) : Game(argc, argv)
 	_pacman->speedMultiplier = 1.0f;
 	_pacman->dead = false;
 
+	
 
 
 
+
+
+	Audio::Initialise();
 	//Initialise important Game aspects
 	Graphics::Initialise(argc, argv, this, 1024, 768, false, 25, 25, "Pacman", 60);
 	Input::Initialise();
-	Audio::Initialise();
 	// Start the Game Loop - This calls Update and Draw in game loop
 	Graphics::StartGameLoop();
 }
@@ -175,7 +183,7 @@ void Pacman::Update(int elapsedTime)
 		
 		if (!_pausenmain->paused)
 		{
-			bool Play(_bgm);
+			/*Audio::Play(_bgm);*/
 			Input(elapsedTime, keyboardState,mouseState);
 			CheckViewportCollision();
 			UpdatePacman(elapsedTime);
@@ -183,7 +191,7 @@ void Pacman::Update(int elapsedTime)
 			UpdateCherry(elapsedTime);
 			UpdateGhost(elapsedTime);
 			CheckGhostCollisions();
-			
+			CheckMunchieCollisions();
 			
 		}
 	}
@@ -319,7 +327,7 @@ void Pacman::CheckGhostCollisions()
 		{
 			_pacman->dead = true;
 			i = GHOSTCOUNT;
-			Audio::Play(_pop);
+			
 		}
 	}
 
@@ -351,8 +359,9 @@ void Pacman::CheckMunchieCollisions()
 		if ((bottom1 > top2) && (top1 < bottom2) && (right1 > left2) && (left1 < right2))
 		{
 			_pacman->dead = true;
-			/*i = MUNCHIECOUNT;*/
+			i = MUNCHIECOUNT;
 			Audio::Play(_pop);
+
 		}
 	}
 
@@ -539,7 +548,15 @@ void Pacman::Draw(int elapsedTime)
 	
 	SpriteBatch::EndDraw(); // Ends Drawing
 
+	//Draws text for game over
+	if (_pacman->dead == true)
+	{
+		std::stringstream menuStream;
+		menuStream << "GAME OVER\n";
 
+		SpriteBatch::Draw(_pausenmain->background, _pausenmain->rectangle, nullptr);
+		SpriteBatch::DrawString(menuStream.str().c_str(), _pausenmain->stringPosition, Color::Red);
+	}
 
 
 
