@@ -2,15 +2,19 @@
 
 #include <sstream>
 #include <time.h>
+#include <iostream>
 
 Pacman::Pacman(int argc, char* argv[]) : Game(argc, argv)
 {
 
-
+	
 
 	_pacman = new Player();
 	_pausenmain = new Menu();
 	_cherry = new Collect();
+	_pop = new SoundEffect();
+	_bgm = new SoundEffect();
+
 	for (int i = 0; i < GHOSTCOUNT; ++i)
 	{
 		_ghost[i] = new Enemy();
@@ -45,7 +49,7 @@ Pacman::Pacman(int argc, char* argv[]) : Game(argc, argv)
 	//Initialise important Game aspects
 	Graphics::Initialise(argc, argv, this, 1024, 768, false, 25, 25, "Pacman", 60);
 	Input::Initialise();
-
+	Audio::Initialise();
 	// Start the Game Loop - This calls Update and Draw in game loop
 	Graphics::StartGameLoop();
 }
@@ -71,6 +75,8 @@ Pacman::~Pacman()
 	delete _cherry->cMunchie;
 	delete _cherry->position;
 	delete _cherry->rect;
+	delete _pop;
+	delete _bgm;
 	for (int i = 0; i < GHOSTCOUNT; ++i)
 	{
 		delete _ghost[i]->texture;
@@ -129,13 +135,25 @@ void Pacman::LoadContent()
 		_ghost[i]->sourceRect = new Rect(0.0f, 0.0f, 20, 20);
 	}
 
-
+	//Load sounds 
+	_pop->Load("Sounds/pop.wav");
+	_bgm->Load("Sounds/BGM.wav");
 
 }
 
 
 void Pacman::Update(int elapsedTime)
 {
+
+	if (!Audio::IsInitialised())
+	{
+		std::cout << "Audio is not initialised" << std::endl;
+	}
+
+	if (!_pop->IsLoaded())
+	{
+		std::cout << "pop member sound efffect not loaded" << std::endl;
+	}
 
 
 	// Gets the current state of the keyboard
@@ -150,12 +168,14 @@ void Pacman::Update(int elapsedTime)
 		//Check for start
 		if (keyboardState->IsKeyDown(Input::Keys::SPACE))
 			_pausenmain->startGame = true;
+
 	}
 	else
 	{
 		
 	if (!_pausenmain->paused)
 		{
+			Audio::Play(_bgm);
 			Input(elapsedTime, keyboardState,mouseState);
 			CheckViewportCollision();
 			UpdatePacman(elapsedTime);
@@ -163,6 +183,8 @@ void Pacman::Update(int elapsedTime)
 			UpdateCherry(elapsedTime);
 			UpdateGhost(elapsedTime);
 			CheckGhostCollisions();
+			
+			
 		}
 	}
 
@@ -248,6 +270,7 @@ void Pacman::UpdateGhost(int elapsedTime)
 		else if (_ghost[i]->position->X <= 0) //Hits left edge 
 		{
 			_ghost[i]->direction = 0; //Change direction 
+
 		}
 		_ghost[i]->sourceRect->Y = _ghost[i]->sourceRect->Height * _ghost[i]->direction;
 
@@ -270,7 +293,40 @@ void Pacman::UpdateGhost(int elapsedTime)
 }
 
 
-bool Pacman::CheckGhostCollisions()
+void Pacman::CheckGhostCollisions()
+{
+	// Local Variables
+	int i = 0;
+	int bottom1 = _pacman->position->Y + _pacman->sourceRect->Height;
+	int bottom2 = 0;
+	int left1 = _pacman->position->X;
+	int left2 = 0;
+	int right1 = _pacman->position->X + _pacman->sourceRect->Width;
+	int right2 = 0;
+	int top1 = _pacman->position->Y;
+	int top2 = 0;
+	
+
+	for (i = 0; i < GHOSTCOUNT; i++)
+	{
+		// Populate variables with Ghost data
+		bottom2 = _ghost[i]->position->Y + _ghost[i]->sourceRect->Height;
+		left2 = _ghost[i]->position->X;
+		right2 = _ghost[i]->position->X + _ghost[i]->sourceRect->Width;
+		top2 = _ghost[i]->position->Y;
+
+		if ((bottom1 > top2) && (top1 < bottom2) && (right1 > left2) && (left1 < right2))
+		{
+			_pacman->dead = true;
+			i = GHOSTCOUNT;
+			Audio::Play(_pop);
+		}
+	}
+
+
+}
+
+void Pacman::CheckMunchieCollisions()
 {
 	// Local Variables
 	int i = 0;
@@ -283,22 +339,20 @@ bool Pacman::CheckGhostCollisions()
 	int top1 = _pacman->position->Y;
 	int top2 = 0;
 
-	for (i = 0; i < GHOSTCOUNT; i++)
+
+	for (i = 0; i < MUNCHIECOUNT; i++)
 	{
 		// Populate variables with Ghost data
-		bottom2 =
-			_ghost[i]->position->Y + _ghost[i]->sourceRect->Height;
-		left2 = _ghost[i]->position->X;
-		right2 =
-			_ghost[i]->position->X + _ghost[i]->sourceRect->Width;
-		top2 = _ghost[i]->position->Y;
+		bottom2 = _munchies[i]->position->Y + _munchies[i]->rect->Height;
+		left2 = _munchies[i]->position->X;
+		right2 = _munchies[i]->position->X + _munchies[i]->rect->Width;
+		top2 = _munchies[i]->position->Y;
 
-		if ((bottom1 > top2) && (top1 < bottom2) && (right1 > left2)
-			&& (left1 < right2))
+		if ((bottom1 > top2) && (top1 < bottom2) && (right1 > left2) && (left1 < right2))
 		{
 			_pacman->dead = true;
-			i = GHOSTCOUNT;
-			return true;
+			/*i = MUNCHIECOUNT;*/
+			Audio::Play(_pop);
 		}
 	}
 

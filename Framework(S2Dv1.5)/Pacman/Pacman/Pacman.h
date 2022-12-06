@@ -113,6 +113,8 @@ private:
 	Menu* _pausenmain;
 	Collect* _cherry;
 	Enemy* _ghost[GHOSTCOUNT];
+	SoundEffect* _pop;
+	SoundEffect* _bgm;
 
 	//Input methods 
 	void Input(int elapsedTime, Input::KeyboardState* state, Input::MouseState*mouseState);
@@ -121,8 +123,8 @@ private:
 	//Check methods
 	void CheckPaused(Input::KeyboardState* state);
 	void CheckViewportCollision();
-	bool CheckGhostCollisions();
-
+	void CheckGhostCollisions();
+	void CheckMunchieCollisions();
 
 	//Update methods
 	void UpdatePacman(int elapsedTime);
