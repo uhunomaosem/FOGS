@@ -154,7 +154,7 @@ void Pacman::Update(int elapsedTime)
 	else
 	{
 		
-	if (!_pausenmain->paused)
+		if (!_pausenmain->paused)
 		{
 			Input(elapsedTime, keyboardState,mouseState);
 			CheckViewportCollision();
@@ -403,7 +403,7 @@ void Pacman::CheckPaused(Input::KeyboardState* state)
 {
 
 	//When p is held down game should pause or unpause
-	if (state->IsKeyDown(Input::Keys::P) && _pausenmain->pKeyDown)
+	if (state->IsKeyDown(Input::Keys::P) && !_pausenmain->pKeyDown)
 	{
 		_pausenmain->pKeyDown = true;
 		_pausenmain->paused = !_pausenmain->paused;
