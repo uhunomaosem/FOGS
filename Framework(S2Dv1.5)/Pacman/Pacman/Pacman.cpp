@@ -115,7 +115,7 @@ void Pacman::LoadContent()
 		_munchies[i]->cMunchie = new Texture2D();
 		_munchies[i]->cMunchie->Load("Textures/AllMunchies.png", false);
 		_munchies[i]->rect = new Rect(0.0f, 0.0f, 12, 12);
-		_munchies[i]->position = new Vector2((rand() % Graphics::GetViewportWidth() - _walls[i]->sourceRect->Width) , (rand() % Graphics::GetViewportHeight() - _walls[i]->sourceRect->Height));
+		_munchies[i]->position = new Vector2((rand() % Graphics::GetViewportWidth() - _munchies[i]->rect->Width) , (rand() % Graphics::GetViewportHeight() - _munchies[i]->rect->Height));
 	}
 
 	//Load cherry
