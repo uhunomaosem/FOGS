@@ -7,17 +7,15 @@
 Pacman::Pacman(int argc, char* argv[]) : Game(argc, argv)
 {
 
-	int munchieCount = 4;
-	//std::cout << "Enter how many munchies you want" << std::endl;
-	//std::cin >> munchieCount;
 
 
-	_munchies = new Collect*[munchieCount];
+
 	_pacman = new Player();
 	_pausenmain = new Menu();
 	_cherry = new Collect();
 	_pop = new SoundEffect();
 	_bgm = new SoundEffect();
+
 
 	for (int i = 0; i < GHOSTCOUNT; ++i)
 	{
@@ -27,11 +25,14 @@ Pacman::Pacman(int argc, char* argv[]) : Game(argc, argv)
 
 	}
 	
-
-
-	for (int i = 0; i < munchieCount; ++i)
+	for (int i = 0; i < WALLCOUNT; ++i)
 	{
-		/*_munchies[i] = new Collect();*/
+		_walls[i] = new Walls();
+	}
+
+	for (int i = 0; i < MUNCHIECOUNT; ++i)
+	{
+		_munchies[i] = new Collect();
 		_munchies[i]->currentFrameTime = 0;
 		_munchies[i]->frame = 0;
 		_munchies[i]->frameCount = 0;
@@ -41,13 +42,14 @@ Pacman::Pacman(int argc, char* argv[]) : Game(argc, argv)
 	_pausenmain->paused = false;
 	_pausenmain->pKeyDown = false;
 	_pausenmain->startGame = false;
+	_pausenmain->deathScreen = false;
 	//pacman
 	_pacman->direction = 0;
 	_pacman->currentFrameTime = 0;
 	_pacman->frame = 0;
 	_pacman->speedMultiplier = 1.0f;
 	_pacman->dead = false;
-
+	_pacman->points = 0;
 	
 
 
@@ -113,7 +115,7 @@ void Pacman::LoadContent()
 		_munchies[i]->cMunchie = new Texture2D();
 		_munchies[i]->cMunchie->Load("Textures/AllMunchies.png", false);
 		_munchies[i]->rect = new Rect(0.0f, 0.0f, 12, 12);
-		_munchies[i]->position = new Vector2((rand() % Graphics::GetViewportWidth()), (rand() % Graphics::GetViewportHeight()));
+		_munchies[i]->position = new Vector2((rand() % Graphics::GetViewportWidth() - _walls[i]->sourceRect->Width) , (rand() % Graphics::GetViewportHeight() - _walls[i]->sourceRect->Height));
 	}
 
 	//Load cherry
@@ -121,6 +123,20 @@ void Pacman::LoadContent()
 	_cherry->cMunchie->Load("Textures/Cherry.png", false);
 	_cherry->position = new Vector2(350.0f, 350.0f);
 	_cherry->rect = new Rect(100.0f, 350.0f, 32, 32);
+
+
+	//Load wall 
+	for (int i = 0; i < WALLCOUNT; ++i)
+	{
+		_walls[i]->texture = new Texture2D();
+		_walls[i]->texture->Load("Textures/AllMunchies.png", false);
+		_walls[i]->sourceRect = new Rect(0.0f, 0.0f, 12, 12);
+		_walls[i]->position = new Vector2((rand() % Graphics::GetViewportWidth()), (rand() % Graphics::GetViewportHeight()));
+		int x = rand() % (Graphics::GetViewportWidth() - _walls[i]->sourceRect->Width);
+		int y = rand() % (Graphics::GetViewportHeight() - _walls[i]->sourceRect->Height);
+		_walls[i]->position->X = x;
+		_walls[i]->position->Y = y;
+	}
 
 
 
@@ -153,6 +169,9 @@ void Pacman::LoadContent()
 void Pacman::Update(int elapsedTime)
 {
 
+
+
+
 	if (!Audio::IsInitialised())
 	{
 		std::cout << "Audio is not initialised" << std::endl;
@@ -175,7 +194,11 @@ void Pacman::Update(int elapsedTime)
 	{
 		//Check for start
 		if (keyboardState->IsKeyDown(Input::Keys::SPACE))
+		{
 			_pausenmain->startGame = true;
+			Audio::Play(_bgm);
+		}
+
 
 	}
 	else
@@ -183,7 +206,7 @@ void Pacman::Update(int elapsedTime)
 		
 		if (!_pausenmain->paused)
 		{
-			/*Audio::Play(_bgm);*/
+			
 			Input(elapsedTime, keyboardState,mouseState);
 			CheckViewportCollision();
 			UpdatePacman(elapsedTime);
@@ -194,6 +217,7 @@ void Pacman::Update(int elapsedTime)
 			CheckMunchieCollisions();
 			
 		}
+		
 	}
 
 	CheckPaused(keyboardState);
@@ -325,8 +349,8 @@ void Pacman::CheckGhostCollisions()
 
 		if ((bottom1 > top2) && (top1 < bottom2) && (right1 > left2) && (left1 < right2))
 		{
-			_pacman->dead = true;
 			i = GHOSTCOUNT;
+			_pacman->dead = true;
 			
 		}
 	}
@@ -359,8 +383,12 @@ void Pacman::CheckMunchieCollisions()
 		if ((bottom1 > top2) && (top1 < bottom2) && (right1 > left2) && (left1 < right2))
 		{
 			_pacman->dead = true;
+			_munchies[i]->position->Y = -100;
+			_munchies[i]->position->X = -100;
+			_pacman->points += 1;
 			i = MUNCHIECOUNT;
 			Audio::Play(_pop);
+
 
 		}
 	}
@@ -408,7 +436,7 @@ void Pacman::Input(int elapsedTime, Input::KeyboardState* state, Input::MouseSta
 	{
 		_pacman->position->X += _pacman->speed * elapsedTime * _pacman->speedMultiplier; //Moves Pacman across X axis
 		_pacman->direction = 0;
-
+		
 	}
 
 	// Checks if A key is pressed
@@ -470,10 +498,12 @@ void Pacman::CheckPaused(Input::KeyboardState* state)
 	{
 		_pausenmain->pKeyDown = true;
 		_pausenmain->paused = !_pausenmain->paused;
+		Audio::Pause(_bgm);
 	}
 	if (state->IsKeyUp(Input::Keys::P))
 	{
 		_pausenmain->pKeyDown = false;
+		
 	}
 
 }
@@ -501,7 +531,7 @@ void Pacman::Draw(int elapsedTime)
 
 	// Allows us to easily create a string
 	std::stringstream stream;
-	stream << "Pacman X: " << _pacman->position->X << " Y: " << _pacman->position->Y;
+	stream << "Player Points: " << _pacman->points;
 
 
 
@@ -511,6 +541,13 @@ void Pacman::Draw(int elapsedTime)
 		SpriteBatch::Draw(_munchies[i]->cMunchie, _munchies[i]->position, _munchies[i]->rect);
 	}
 	
+	//Draws wall
+	for (int i = 0; i < WALLCOUNT; ++i)
+	{
+		SpriteBatch::Draw(_walls[i]->texture, _walls[i]->position, _walls[i]->sourceRect);
+	}
+
+
 
 	SpriteBatch::Draw(_pacman->texture, _pacman->position, _pacman->sourceRect); // Draws Pacman
 
@@ -551,6 +588,7 @@ void Pacman::Draw(int elapsedTime)
 	//Draws text for game over
 	if (_pacman->dead == true)
 	{
+		
 		std::stringstream menuStream;
 		menuStream << "GAME OVER\n";
 

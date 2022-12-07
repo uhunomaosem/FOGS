@@ -7,8 +7,9 @@
 		#pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
 	#endif
 #endif
-#define MUNCHIECOUNT 5
+#define MUNCHIECOUNT 50
 #define GHOSTCOUNT 32
+#define WALLCOUNT 30
 // Just need to include main header file
 #include "S2D/S2D.h"
 
@@ -22,6 +23,7 @@ struct Player
 	int currentFrameTime;
 	int direction;
 	int frame;
+	int points;
 	Rect* sourceRect;
 	Texture2D* texture;
 	Vector2* position;
@@ -53,6 +55,7 @@ struct Menu
 	bool pKeyDown;
 	bool startGame;
 	Vector2* cordstringPosition;
+	bool deathScreen;
 };
 
 struct Enemy
@@ -68,6 +71,12 @@ struct Enemy
 	const int frameTime = 160;
 };
 
+struct Walls
+{
+	Vector2* position;
+	Texture2D* texture;
+	Rect* sourceRect;
+};
 
 
 
@@ -112,12 +121,13 @@ private:
 
 
 	Player* _pacman;
-	Collect** _munchies;
+	Collect* _munchies[MUNCHIECOUNT];
 	Menu* _pausenmain;
 	Collect* _cherry;
 	Enemy* _ghost[GHOSTCOUNT];
 	SoundEffect* _pop;
 	SoundEffect* _bgm;
+	Walls* _walls[WALLCOUNT];
 
 	//Input methods 
 	void Input(int elapsedTime, Input::KeyboardState* state, Input::MouseState*mouseState);
