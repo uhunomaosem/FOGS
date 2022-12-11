@@ -64,6 +64,9 @@ Pacman::Pacman(int argc, char* argv[]) : Game(argc, argv)
 	Graphics::StartGameLoop();
 }
 
+
+
+
 Pacman::~Pacman()
 {
 	
@@ -128,14 +131,16 @@ void Pacman::LoadContent()
 	//Load wall 
 	for (int i = 0; i < WALLCOUNT; ++i)
 	{
+		int f = 24;
 		_walls[i]->texture = new Texture2D();
-		_walls[i]->texture->Load("Textures/AllMunchies.png", false);
-		_walls[i]->sourceRect = new Rect(0.0f, 0.0f, 12, 12);
+		_walls[i]->texture->Load("Textures/wall.png", false);
+		_walls[i]->sourceRect = new Rect(0.0f, 0.0f, 24, 24);
 		_walls[i]->position = new Vector2((rand() % Graphics::GetViewportWidth()), (rand() % Graphics::GetViewportHeight()));
-		int x = rand() % (Graphics::GetViewportWidth() - _walls[i]->sourceRect->Width);
+		int x = (Graphics::GetViewportWidth() - _walls[i]->sourceRect->Width);
 		int y = rand() % (Graphics::GetViewportHeight() - _walls[i]->sourceRect->Height);
 		_walls[i]->position->X = x;
 		_walls[i]->position->Y = y;
+		++f;
 	}
 
 
@@ -215,6 +220,7 @@ void Pacman::Update(int elapsedTime)
 			UpdateGhost(elapsedTime);
 			CheckGhostCollisions();
 			CheckMunchieCollisions();
+			CheckBoxCollisions();
 			
 		}
 		
@@ -350,8 +356,7 @@ void Pacman::CheckGhostCollisions()
 		if ((bottom1 > top2) && (top1 < bottom2) && (right1 > left2) && (left1 < right2))
 		{
 			i = GHOSTCOUNT;
-			_pacman->dead = true;
-			
+			_pausenmain->deathScreen = true;
 		}
 	}
 
@@ -395,6 +400,47 @@ void Pacman::CheckMunchieCollisions()
 
 
 }
+
+void Pacman::CheckBoxCollisions()
+{
+	// Local Variables
+	int i = 0;
+	int bottom1 = _pacman->position->Y + _pacman->sourceRect->Height;
+	int bottom2 = 0;
+	int left1 = _pacman->position->X;
+	int left2 = 0;
+	int right1 = _pacman->position->X + _pacman->sourceRect->Width;
+	int right2 = 0;
+	int top1 = _pacman->position->Y;
+	int top2 = 0;
+
+
+	for (i = 0; i < WALLCOUNT; i++)
+	{
+		// Populate variables with Ghost data
+		bottom2 = _walls[i]->position->Y + _walls[i]->sourceRect->Height;
+		left2 = _walls[i]->position->X;
+		right2 = _walls[i]->position->X + _walls[i]->sourceRect->Width;
+		top2 = _walls[i]->position->Y;
+
+		if ((bottom1 > top2) && (top1 < bottom2) && (right1 > left2) && (left1 < right2))
+		{
+			_pacman->position->X = (Graphics::GetViewportWidth() - _walls[i]->sourceRect->Width) - 28;
+			i = WALLCOUNT;
+			Audio::Play(_pop);
+
+
+		}
+	}
+
+
+}
+
+
+
+
+
+
 
 
 //Check for collision on any wall 
@@ -586,7 +632,7 @@ void Pacman::Draw(int elapsedTime)
 	SpriteBatch::EndDraw(); // Ends Drawing
 
 	//Draws text for game over
-	if (_pacman->dead == true)
+	if (_pausenmain->deathScreen == true)
 	{
 		
 		std::stringstream menuStream;

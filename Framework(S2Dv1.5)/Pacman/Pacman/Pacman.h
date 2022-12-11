@@ -9,7 +9,7 @@
 #endif
 #define MUNCHIECOUNT 50
 #define GHOSTCOUNT 32
-#define WALLCOUNT 30
+#define WALLCOUNT 100
 // Just need to include main header file
 #include "S2D/S2D.h"
 
@@ -138,6 +138,7 @@ private:
 	void CheckViewportCollision();
 	void CheckGhostCollisions();
 	void CheckMunchieCollisions();
+	void CheckBoxCollisions();
 
 	//Update methods
 	void UpdatePacman(int elapsedTime);
