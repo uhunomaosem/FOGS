@@ -77,7 +77,8 @@ Pacman::~Pacman()
 		delete _munchies[i]->rect;
 		delete _munchies[i];
 	}
-	delete _pausenmain->background;
+	delete _pausenmain->background1;
+	delete _pausenmain->background2;
 	delete _pausenmain->rectangle;
 	delete _pausenmain->stringPosition;
 	delete _pacman->texture;
@@ -135,9 +136,9 @@ void Pacman::LoadContent()
 		_walls[i]->texture = new Texture2D();
 		_walls[i]->texture->Load("Textures/wall.png", false);
 		_walls[i]->sourceRect = new Rect(0.0f, 0.0f, 24, 24);
-		_walls[i]->position = new Vector2((rand() % Graphics::GetViewportWidth()), (rand() % Graphics::GetViewportHeight()));
+		_walls[i]->position = new Vector2((Graphics::GetViewportWidth()), (Graphics::GetViewportHeight()));
 		int x = (Graphics::GetViewportWidth() - _walls[i]->sourceRect->Width);
-		int y = rand() % (Graphics::GetViewportHeight() - _walls[i]->sourceRect->Height);
+		int y = rand() % (Graphics::GetViewportHeight()/* - _walls[i]->sourceRect->Height*/);
 		_walls[i]->position->X = x;
 		_walls[i]->position->Y = y;
 		++f;
@@ -148,18 +149,23 @@ void Pacman::LoadContent()
 	// Set string position
 	_pausenmain->cordstringPosition = new Vector2(10.0f, 25.0f);
 
-	// Set menu Parameters
-	_pausenmain->background = new Texture2D();
-	_pausenmain->background->Load("Textures/Transparency.png", false);
+	// Set mainmenu Parameters
+	_pausenmain->background1 = new Texture2D();
+	_pausenmain->background1->Load("Textures/mainmenu.png", false);
 	_pausenmain->rectangle = new Rect(0.0f, 0.0f, Graphics::GetViewportWidth(), Graphics::GetViewportWidth());
 	_pausenmain->stringPosition = new Vector2(Graphics::GetViewportWidth() / 2.0f, Graphics::GetViewportHeight() / 2.0f);
 
+	// Set pausemenu Parameters
+	_pausenmain->background2 = new Texture2D();
+	_pausenmain->background2->Load("Textures/pausemenu.png", false);
+	_pausenmain->rectangle = new Rect(0.0f, 0.0f, Graphics::GetViewportWidth(), Graphics::GetViewportWidth());
+	_pausenmain->stringPosition = new Vector2(Graphics::GetViewportWidth() / 2.0f, Graphics::GetViewportHeight() / 2.0f);
 
 	//Initialise ghost character
 	for (int i = 0; i < GHOSTCOUNT; ++i)
 	{
 		_ghost[i]->texture = new Texture2D();
-		_ghost[i]->texture->Load("Textures/AllGhost.tga", false);
+		_ghost[i]->texture->Load("Textures/AllGhostfix.png", false);
 		_ghost[i]->position = new Vector2((rand() % Graphics::GetViewportWidth()), (rand() % Graphics::GetViewportHeight()));
 		_ghost[i]->sourceRect = new Rect(0.0f, 0.0f, 20, 20);
 	}
@@ -287,30 +293,64 @@ void Pacman::UpdateGhost(int elapsedTime)
 {
 	for (int i = 0; i < GHOSTCOUNT; ++i)
 	{
-		if (_ghost[i]->direction == 0) //Moves Right 
+		if (i > 12)
 		{
-			_ghost[i]->position->X += _ghost[i]->speed * elapsedTime;
+			_ghost[i]->direction = 3;
+			if (_ghost[i]->direction == 1) 
+			{
+				_ghost[i]->position->Y += _ghost[i]->speed * elapsedTime;
+			}
+
+			else if (_ghost[i]->direction == 3) //Moves Right 
+			{
+				_ghost[i]->position->Y -= _ghost[i]->speed * elapsedTime;
+
+			}
+
+
+			if (_ghost[i]->position->Y + _ghost[i]->sourceRect->Height >=
+				Graphics::GetViewportHeight()) //Hits Right edge 
+			{
+				_ghost[i]->direction = 3; //Change direction 
+			}
+
+			else if (_ghost[i]->position->Y <= 0) //Hits left edge 
+			{
+				_ghost[i]->direction = 1; //Change direction 
+
+			}
+			_ghost[i]->sourceRect->Y = _ghost[i]->sourceRect->Height * _ghost[i]->direction;
+
 
 		}
-		else if (_ghost[i]->direction == 2) //Moves Left 
+		if (i < 12)
 		{
-			_ghost[i]->position->X -= _ghost[i]->speed * elapsedTime;
-			
-		}
+			if (_ghost[i]->direction == 0) //Moves Right 
+			{
+				_ghost[i]->position->X += _ghost[i]->speed * elapsedTime;
+
+			}
+			else if (_ghost[i]->direction == 2) //Moves Left 
+			{
+				_ghost[i]->position->X -= _ghost[i]->speed * elapsedTime;
+
+			}
 
 
-		if (_ghost[i]->position->X + _ghost[i]->sourceRect->Width >=
-			Graphics::GetViewportWidth()) //Hits Right edge 
-		{
-			_ghost[i]->direction = 2; //Change direction 
-		}
-		
-		else if (_ghost[i]->position->X <= 0) //Hits left edge 
-		{
-			_ghost[i]->direction = 0; //Change direction 
+			if (_ghost[i]->position->X + _ghost[i]->sourceRect->Width >=
+				Graphics::GetViewportWidth()) //Hits Right edge 
+			{
+				_ghost[i]->direction = 2; //Change direction 
+			}
+
+			else if (_ghost[i]->position->X <= 0) //Hits left edge 
+			{
+				_ghost[i]->direction = 0; //Change direction 
+
+			}
+			/*_ghost[i]->sourceRect->Y = _ghost[i]->sourceRect->Height * _ghost[i]->direction;*/
 
 		}
-		_ghost[i]->sourceRect->Y = _ghost[i]->sourceRect->Height * _ghost[i]->direction;
 
 		//_ghost[i]->currentFrameTime += elapsedTime;
 		//if (_ghost[i]->currentFrameTime > _ghost[i]->frameTime)
@@ -329,6 +369,7 @@ void Pacman::UpdateGhost(int elapsedTime)
 	}
 
 }
+
 
 
 void Pacman::CheckGhostCollisions()
@@ -577,7 +618,7 @@ void Pacman::Draw(int elapsedTime)
 
 	// Allows us to easily create a string
 	std::stringstream stream;
-	stream << "Player Points: " << _pacman->points;
+	stream << "Player Points: " << _pacman->position->X << "y :" << _pacman->position->Y;
 
 
 
@@ -611,22 +652,22 @@ void Pacman::Draw(int elapsedTime)
 	//Draws text to pause menu and adds transparent texture
 	if (_pausenmain->paused)
 	{
-		std::stringstream menuStream;
-		menuStream << "PAUSED!";
+		//std::stringstream menuStream;
+		//menuStream << "PAUSED!";
 
-		SpriteBatch::Draw(_pausenmain->background, _pausenmain->rectangle, nullptr);
-		SpriteBatch::DrawString(menuStream.str().c_str(), _pausenmain->stringPosition, Color::Red);
+		SpriteBatch::Draw(_pausenmain->background2, _pausenmain->rectangle, nullptr);
+		/*SpriteBatch::DrawString(menuStream.str().c_str(), _pausenmain->stringPosition, Color::Red);*/
 	}
 
 	//Draws text to start menu before the game starts and adds transparent texture
 	if (!_pausenmain->startGame)
 	{
-		std::stringstream menuStream;
-		menuStream << "MAIN MENU\n";
-		menuStream << "Start game by pressing space";
+		//std::stringstream menuStream;
+		//menuStream << "MAIN MENU\n";
+		//menuStream << "Start game by pressing space";
 
-		SpriteBatch::Draw(_pausenmain->background, _pausenmain->rectangle, nullptr);
-		SpriteBatch::DrawString(menuStream.str().c_str(), _pausenmain->stringPosition, Color::Red);
+		SpriteBatch::Draw(_pausenmain->background1, _pausenmain->rectangle, nullptr);
+		//SpriteBatch::DrawString(menuStream.str().c_str(), _pausenmain->stringPosition, Color::Red);
 	}
 	
 	SpriteBatch::EndDraw(); // Ends Drawing
@@ -638,7 +679,7 @@ void Pacman::Draw(int elapsedTime)
 		std::stringstream menuStream;
 		menuStream << "GAME OVER\n";
 
-		SpriteBatch::Draw(_pausenmain->background, _pausenmain->rectangle, nullptr);
+		SpriteBatch::Draw(_pausenmain->background1, _pausenmain->rectangle, nullptr);
 		SpriteBatch::DrawString(menuStream.str().c_str(), _pausenmain->stringPosition, Color::Red);
 	}
 

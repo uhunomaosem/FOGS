@@ -9,7 +9,7 @@
 #endif
 #define MUNCHIECOUNT 50
 #define GHOSTCOUNT 32
-#define WALLCOUNT 100
+#define WALLCOUNT 32
 // Just need to include main header file
 #include "S2D/S2D.h"
 
@@ -48,7 +48,8 @@ struct Collect
 
 struct Menu
 {
-	Texture2D* background;
+	Texture2D* background1;
+	Texture2D* background2;
 	Rect* rectangle;
 	Vector2* stringPosition;
 	bool paused;
@@ -139,6 +140,7 @@ private:
 	void CheckGhostCollisions();
 	void CheckMunchieCollisions();
 	void CheckBoxCollisions();
+
 
 	//Update methods
 	void UpdatePacman(int elapsedTime);
