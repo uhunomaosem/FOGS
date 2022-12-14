@@ -25,10 +25,7 @@ Pacman::Pacman(int argc, char* argv[]) : Game(argc, argv)
 
 	}
 	
-	for (int i = 0; i < WALLCOUNT; ++i)
-	{
-		_walls[i] = new Walls();
-	}
+
 
 	for (int i = 0; i < MUNCHIECOUNT; ++i)
 	{
@@ -43,6 +40,7 @@ Pacman::Pacman(int argc, char* argv[]) : Game(argc, argv)
 	_pausenmain->pKeyDown = false;
 	_pausenmain->startGame = false;
 	_pausenmain->deathScreen = false;
+	_pausenmain->winScreen = false;
 	//pacman
 	_pacman->direction = 0;
 	_pacman->currentFrameTime = 0;
@@ -129,21 +127,6 @@ void Pacman::LoadContent()
 	_cherry->rect = new Rect(100.0f, 350.0f, 32, 32);
 
 
-	//Load wall 
-	for (int i = 0; i < WALLCOUNT; ++i)
-	{
-		int f = 24;
-		_walls[i]->texture = new Texture2D();
-		_walls[i]->texture->Load("Textures/wall.png", false);
-		_walls[i]->sourceRect = new Rect(0.0f, 0.0f, 24, 24);
-		_walls[i]->position = new Vector2((Graphics::GetViewportWidth()), (Graphics::GetViewportHeight()));
-		int x = (Graphics::GetViewportWidth() - _walls[i]->sourceRect->Width);
-		int y = rand() % (Graphics::GetViewportHeight()/* - _walls[i]->sourceRect->Height*/);
-		_walls[i]->position->X = x;
-		_walls[i]->position->Y = y;
-		++f;
-	}
-
 
 
 	// Set string position
@@ -160,6 +143,7 @@ void Pacman::LoadContent()
 	_pausenmain->background2->Load("Textures/pausemenu.png", false);
 	_pausenmain->rectangle = new Rect(0.0f, 0.0f, Graphics::GetViewportWidth(), Graphics::GetViewportWidth());
 	_pausenmain->stringPosition = new Vector2(Graphics::GetViewportWidth() / 2.0f, Graphics::GetViewportHeight() / 2.0f);
+
 
 	//Initialise ghost character
 	for (int i = 0; i < GHOSTCOUNT; ++i)
@@ -215,10 +199,10 @@ void Pacman::Update(int elapsedTime)
 	else
 	{
 		
-		if (!_pausenmain->paused)
+		if (!_pausenmain->paused && !_pausenmain->winScreen && !_pausenmain->deathScreen)
 		{
-			
-			Input(elapsedTime, keyboardState,mouseState);
+
+			Input(elapsedTime, keyboardState, mouseState);
 			CheckViewportCollision();
 			UpdatePacman(elapsedTime);
 			UpdateMunchie(elapsedTime);
@@ -226,8 +210,10 @@ void Pacman::Update(int elapsedTime)
 			UpdateGhost(elapsedTime);
 			CheckGhostCollisions();
 			CheckMunchieCollisions();
-			CheckBoxCollisions();
-			
+			if (_pacman->points == 10)
+			{
+				_pausenmain->winScreen = true;
+			}
 		}
 		
 	}
@@ -398,6 +384,7 @@ void Pacman::CheckGhostCollisions()
 		{
 			i = GHOSTCOUNT;
 			_pausenmain->deathScreen = true;
+			_pacman->dead = false;
 		}
 	}
 
@@ -442,40 +429,7 @@ void Pacman::CheckMunchieCollisions()
 
 }
 
-void Pacman::CheckBoxCollisions()
-{
-	// Local Variables
-	int i = 0;
-	int bottom1 = _pacman->position->Y + _pacman->sourceRect->Height;
-	int bottom2 = 0;
-	int left1 = _pacman->position->X;
-	int left2 = 0;
-	int right1 = _pacman->position->X + _pacman->sourceRect->Width;
-	int right2 = 0;
-	int top1 = _pacman->position->Y;
-	int top2 = 0;
 
-
-	for (i = 0; i < WALLCOUNT; i++)
-	{
-		// Populate variables with Ghost data
-		bottom2 = _walls[i]->position->Y + _walls[i]->sourceRect->Height;
-		left2 = _walls[i]->position->X;
-		right2 = _walls[i]->position->X + _walls[i]->sourceRect->Width;
-		top2 = _walls[i]->position->Y;
-
-		if ((bottom1 > top2) && (top1 < bottom2) && (right1 > left2) && (left1 < right2))
-		{
-			_pacman->position->X = (Graphics::GetViewportWidth() - _walls[i]->sourceRect->Width) - 28;
-			i = WALLCOUNT;
-			Audio::Play(_pop);
-
-
-		}
-	}
-
-
-}
 
 
 
@@ -618,7 +572,7 @@ void Pacman::Draw(int elapsedTime)
 
 	// Allows us to easily create a string
 	std::stringstream stream;
-	stream << "Player Points: " << _pacman->position->X << "y :" << _pacman->position->Y;
+	stream << "Player Points: " << _pacman->points;
 
 
 
@@ -626,12 +580,6 @@ void Pacman::Draw(int elapsedTime)
 	for (int i = 0; i < MUNCHIECOUNT; ++i)
 	{
 		SpriteBatch::Draw(_munchies[i]->cMunchie, _munchies[i]->position, _munchies[i]->rect);
-	}
-	
-	//Draws wall
-	for (int i = 0; i < WALLCOUNT; ++i)
-	{
-		SpriteBatch::Draw(_walls[i]->texture, _walls[i]->position, _walls[i]->sourceRect);
 	}
 
 
@@ -673,9 +621,17 @@ void Pacman::Draw(int elapsedTime)
 	SpriteBatch::EndDraw(); // Ends Drawing
 
 	//Draws text for game over
-	if (_pausenmain->deathScreen == true)
+	if (_pausenmain->deathScreen)
 	{
 		
+
+
+		SpriteBatch::Draw(_pausenmain->background1, _pausenmain->rectangle, nullptr);
+	}
+
+	if (_pacman->dead)
+	{
+
 		std::stringstream menuStream;
 		menuStream << "GAME OVER\n";
 
@@ -683,7 +639,18 @@ void Pacman::Draw(int elapsedTime)
 		SpriteBatch::DrawString(menuStream.str().c_str(), _pausenmain->stringPosition, Color::Red);
 	}
 
+	//if (_pacman->points = 2)
+	//{
+	//	SpriteBatch::Draw(_pausenmain->background1, _pausenmain->rectangle, nullptr);
+	//}
 
+ 	if (_pausenmain->winScreen)
+	{
+		//std::stringstream menuStream;
+		//menuStream << "PAUSED!";
 
+		SpriteBatch::Draw(_pausenmain->background2, _pausenmain->rectangle, nullptr);
+		/*SpriteBatch::DrawString(menuStream.str().c_str(), _pausenmain->stringPosition, Color::Red);*/
+	}
 
 }

@@ -9,7 +9,6 @@
 #endif
 #define MUNCHIECOUNT 50
 #define GHOSTCOUNT 32
-#define WALLCOUNT 32
 // Just need to include main header file
 #include "S2D/S2D.h"
 
@@ -57,6 +56,7 @@ struct Menu
 	bool startGame;
 	Vector2* cordstringPosition;
 	bool deathScreen;
+	bool winScreen;
 };
 
 struct Enemy
@@ -72,12 +72,6 @@ struct Enemy
 	const int frameTime = 160;
 };
 
-struct Walls
-{
-	Vector2* position;
-	Texture2D* texture;
-	Rect* sourceRect;
-};
 
 
 
@@ -128,7 +122,6 @@ private:
 	Enemy* _ghost[GHOSTCOUNT];
 	SoundEffect* _pop;
 	SoundEffect* _bgm;
-	Walls* _walls[WALLCOUNT];
 
 	//Input methods 
 	void Input(int elapsedTime, Input::KeyboardState* state, Input::MouseState*mouseState);
@@ -139,7 +132,7 @@ private:
 	void CheckViewportCollision();
 	void CheckGhostCollisions();
 	void CheckMunchieCollisions();
-	void CheckBoxCollisions();
+
 
 
 	//Update methods
