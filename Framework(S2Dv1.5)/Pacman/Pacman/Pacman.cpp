@@ -138,15 +138,21 @@ void Pacman::LoadContent()
 	_pausenmain->rectangle = new Rect(0.0f, 0.0f, Graphics::GetViewportWidth(), Graphics::GetViewportWidth());
 	_pausenmain->stringPosition = new Vector2(Graphics::GetViewportWidth() / 2.0f, Graphics::GetViewportHeight() / 2.0f);
 
-	// Set pausemenu Parameters
+
 	_pausenmain->background2 = new Texture2D();
 	_pausenmain->background2->Load("Textures/pausemenu.png", false);
 	_pausenmain->rectangle = new Rect(0.0f, 0.0f, Graphics::GetViewportWidth(), Graphics::GetViewportWidth());
 	_pausenmain->stringPosition = new Vector2(Graphics::GetViewportWidth() / 2.0f, Graphics::GetViewportHeight() / 2.0f);
 
-	// Set pausemenu Parameters
+
 	_pausenmain->background3 = new Texture2D();
-	_pausenmain->background3->Load("Textures/Transparency.png", false);
+	_pausenmain->background3->Load("Textures/gameover.png", false);
+	_pausenmain->rectangle = new Rect(0.0f, 0.0f, Graphics::GetViewportWidth(), Graphics::GetViewportWidth());
+	_pausenmain->stringPosition = new Vector2(Graphics::GetViewportWidth() / 2.0f, Graphics::GetViewportHeight() / 2.0f);
+
+
+	_pausenmain->background4 = new Texture2D();
+	_pausenmain->background4->Load("Textures/winscreen.png", false);
 	_pausenmain->rectangle = new Rect(0.0f, 0.0f, Graphics::GetViewportWidth(), Graphics::GetViewportWidth());
 	_pausenmain->stringPosition = new Vector2(Graphics::GetViewportWidth() / 2.0f, Graphics::GetViewportHeight() / 2.0f);
 
