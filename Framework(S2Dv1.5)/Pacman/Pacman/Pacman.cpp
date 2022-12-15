@@ -144,6 +144,13 @@ void Pacman::LoadContent()
 	_pausenmain->rectangle = new Rect(0.0f, 0.0f, Graphics::GetViewportWidth(), Graphics::GetViewportWidth());
 	_pausenmain->stringPosition = new Vector2(Graphics::GetViewportWidth() / 2.0f, Graphics::GetViewportHeight() / 2.0f);
 
+	// Set pausemenu Parameters
+	_pausenmain->background3 = new Texture2D();
+	_pausenmain->background3->Load("Textures/Transparency.png", false);
+	_pausenmain->rectangle = new Rect(0.0f, 0.0f, Graphics::GetViewportWidth(), Graphics::GetViewportWidth());
+	_pausenmain->stringPosition = new Vector2(Graphics::GetViewportWidth() / 2.0f, Graphics::GetViewportHeight() / 2.0f);
+
+
 
 	//Initialise ghost character
 	for (int i = 0; i < GHOSTCOUNT; ++i)
@@ -199,7 +206,7 @@ void Pacman::Update(int elapsedTime)
 	else
 	{
 		
-		if (!_pausenmain->paused && !_pausenmain->winScreen && !_pausenmain->deathScreen)
+		if (!_pausenmain->paused && !_pausenmain->deathScreen)
 		{
 
 			Input(elapsedTime, keyboardState, mouseState);
@@ -210,10 +217,10 @@ void Pacman::Update(int elapsedTime)
 			UpdateGhost(elapsedTime);
 			CheckGhostCollisions();
 			CheckMunchieCollisions();
-			if (_pacman->points == 10)
-			{
-				_pausenmain->winScreen = true;
-			}
+			//if (_pacman->points == 10)
+			//{
+			//	_pausenmain->winScreen = true;
+			//}
 		}
 		
 	}
@@ -287,7 +294,7 @@ void Pacman::UpdateGhost(int elapsedTime)
 				_ghost[i]->position->Y += _ghost[i]->speed * elapsedTime;
 			}
 
-			else if (_ghost[i]->direction == 3) //Moves Right 
+			else if (_ghost[i]->direction == 3) 
 			{
 				_ghost[i]->position->Y -= _ghost[i]->speed * elapsedTime;
 
@@ -295,17 +302,17 @@ void Pacman::UpdateGhost(int elapsedTime)
 
 
 			if (_ghost[i]->position->Y + _ghost[i]->sourceRect->Height >=
-				Graphics::GetViewportHeight()) //Hits Right edge 
+				Graphics::GetViewportHeight()) 
 			{
-				_ghost[i]->direction = 3; //Change direction 
+				_ghost[i]->direction = 1; //Change direction 
 			}
 
 			else if (_ghost[i]->position->Y <= 0) //Hits left edge 
 			{
-				_ghost[i]->direction = 1; //Change direction 
+				_ghost[i]->direction = 3; //Change direction 
 
 			}
-			_ghost[i]->sourceRect->Y = _ghost[i]->sourceRect->Height * _ghost[i]->direction;
+			/*_ghost[i]->sourceRect->Y = _ghost[i]->sourceRect->Height * _ghost[i]->direction;*/
 
 
 		}
@@ -383,8 +390,8 @@ void Pacman::CheckGhostCollisions()
 		if ((bottom1 > top2) && (top1 < bottom2) && (right1 > left2) && (left1 < right2))
 		{
 			i = GHOSTCOUNT;
-			_pausenmain->deathScreen = true;
-			_pacman->dead = false;
+			/*_pausenmain->deathScreen = true;*/
+			
 		}
 	}
 
@@ -415,7 +422,7 @@ void Pacman::CheckMunchieCollisions()
 
 		if ((bottom1 > top2) && (top1 < bottom2) && (right1 > left2) && (left1 < right2))
 		{
-			_pacman->dead = true;
+			
 			_munchies[i]->position->Y = -100;
 			_munchies[i]->position->X = -100;
 			_pacman->points += 1;
@@ -539,7 +546,7 @@ void Pacman::CheckPaused(Input::KeyboardState* state)
 	{
 		_pausenmain->pKeyDown = true;
 		_pausenmain->paused = !_pausenmain->paused;
-		Audio::Pause(_bgm);
+
 	}
 	if (state->IsKeyUp(Input::Keys::P))
 	{
@@ -620,37 +627,23 @@ void Pacman::Draw(int elapsedTime)
 	
 	SpriteBatch::EndDraw(); // Ends Drawing
 
-	//Draws text for game over
-	if (_pausenmain->deathScreen)
-	{
-		
-
-
-		SpriteBatch::Draw(_pausenmain->background1, _pausenmain->rectangle, nullptr);
-	}
-
-	if (_pacman->dead)
-	{
-
-		std::stringstream menuStream;
-		menuStream << "GAME OVER\n";
-
-		SpriteBatch::Draw(_pausenmain->background1, _pausenmain->rectangle, nullptr);
-		SpriteBatch::DrawString(menuStream.str().c_str(), _pausenmain->stringPosition, Color::Red);
-	}
-
-	//if (_pacman->points = 2)
+	////Draws text for game over
+	//if (_pausenmain->deathScreen)
 	//{
-	//	SpriteBatch::Draw(_pausenmain->background1, _pausenmain->rectangle, nullptr);
+	//	
+
+
+	//	SpriteBatch::Draw(_pausenmain->background3, _pausenmain->rectangle, nullptr);
 	//}
 
- 	if (_pausenmain->winScreen)
-	{
-		//std::stringstream menuStream;
-		//menuStream << "PAUSED!";
 
-		SpriteBatch::Draw(_pausenmain->background2, _pausenmain->rectangle, nullptr);
-		/*SpriteBatch::DrawString(menuStream.str().c_str(), _pausenmain->stringPosition, Color::Red);*/
-	}
+
+ // 	if (_pausenmain->winScreen)
+	//{
+
+
+	//	SpriteBatch::Draw(_pausenmain->background2, _pausenmain->rectangle, nullptr);
+
+	//}
 
 }

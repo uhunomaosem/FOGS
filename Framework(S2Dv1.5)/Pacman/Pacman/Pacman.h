@@ -49,6 +49,8 @@ struct Menu
 {
 	Texture2D* background1;
 	Texture2D* background2;
+	Texture2D* background3;
+	Texture2D* background4;
 	Rect* rectangle;
 	Vector2* stringPosition;
 	bool paused;
