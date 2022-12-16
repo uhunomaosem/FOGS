@@ -12,9 +12,9 @@ Pacman::Pacman(int argc, char* argv[]) : Game(argc, argv)
 
 	_pacman = new Player();
 	_pausenmain = new Menu();
-	_cherry = new Collect();
+	
 	_pop = new SoundEffect();
-	_bgm = new SoundEffect();
+	_crunch = new SoundEffect();
 
 
 	for (int i = 0; i < GHOSTCOUNT; ++i)
@@ -33,6 +33,14 @@ Pacman::Pacman(int argc, char* argv[]) : Game(argc, argv)
 		_munchies[i]->currentFrameTime = 0;
 		_munchies[i]->frame = 0;
 		_munchies[i]->frameCount = 0;
+	}
+
+	for (int i = 0; i < CHERRYCOUNT; ++i)
+	{
+		_cherry[i] = new Collect();
+		_cherry[i]->currentFrameTime = 0;
+		_cherry[i]->frame = 0;
+		_cherry[i]->frameCount = 0;
 	}
 
 	//pausemenu
@@ -84,11 +92,16 @@ Pacman::~Pacman()
 	delete _pacman->sourceRect;
 	delete _pausenmain;
 	delete _pacman;
-	delete _cherry->cMunchie;
-	delete _cherry->position;
-	delete _cherry->rect;
+	for (int i = 0; i < CHERRYCOUNT; ++i)
+	{
+		delete _cherry[i]->cMunchie;
+		delete _cherry[i]->position;
+		delete _cherry[i]->rect;
+		delete _cherry[i];
+	}
+
 	delete _pop;
-	delete _bgm;
+	delete _crunch;
 	for (int i = 0; i < GHOSTCOUNT; ++i)
 	{
 		delete _ghost[i]->texture;
@@ -109,22 +122,23 @@ void Pacman::LoadContent()
 
 	for (int i = 0; i < MUNCHIECOUNT; ++i)
 	{
-		// Load Munchie
-		/*_munchies[i]->blueTexture = new Texture2D();*/
-		/*_munchies[i]->blueTexture->Load("Textures/Munchie.tga", true);*/
-		/*_munchies[i]->invertedTexture = new Texture2D();*/
-		/*_munchies[i]->invertedTexture->Load("Textures/MunchieInverted.tga", true);*/
+
 		_munchies[i]->cMunchie = new Texture2D();
 		_munchies[i]->cMunchie->Load("Textures/AllMunchies.png", false);
 		_munchies[i]->rect = new Rect(0.0f, 0.0f, 12, 12);
 		_munchies[i]->position = new Vector2((rand() % Graphics::GetViewportWidth() - _munchies[i]->rect->Width) , (rand() % Graphics::GetViewportHeight() - _munchies[i]->rect->Height));
 	}
 
-	//Load cherry
-	_cherry->cMunchie = new Texture2D();
-	_cherry->cMunchie->Load("Textures/Cherry.png", false);
-	_cherry->position = new Vector2(350.0f, 350.0f);
-	_cherry->rect = new Rect(100.0f, 350.0f, 32, 32);
+	for (int i = 0; i < CHERRYCOUNT; ++i)
+	{
+		//Load cherry
+		_cherry[i]->cMunchie = new Texture2D();
+		_cherry[i]->cMunchie->Load("Textures/Cherry.png", false);
+		_cherry[i]->rect = new Rect(100.0f, 350.0f, 32, 32);
+		_cherry[i]->position = new Vector2((rand() % Graphics::GetViewportWidth() - _cherry[i]->rect->Width), (rand() % Graphics::GetViewportHeight() - _cherry[i]->rect->Height));
+		
+	}
+
 
 
 
@@ -169,7 +183,7 @@ void Pacman::LoadContent()
 
 	//Load sounds 
 	_pop->Load("Sounds/pop.wav");
-	_bgm->Load("Sounds/BGM.wav");
+	_crunch->Load("Sounds/crunch.wav");
 
 }
 
@@ -194,9 +208,6 @@ void Pacman::Update(int elapsedTime)
 	// Gets the current state of the keyboard
 	Input::KeyboardState* keyboardState = Input::Keyboard::GetState();
 
-	//Gets the current state of the mouse
-	Input::MouseState* mouseState = Input::Mouse::GetState();
-
 
 	if (!_pausenmain->startGame)
 	{
@@ -204,7 +215,7 @@ void Pacman::Update(int elapsedTime)
 		if (keyboardState->IsKeyDown(Input::Keys::SPACE))
 		{
 			_pausenmain->startGame = true;
-			Audio::Play(_bgm);
+			
 		}
 
 
@@ -215,7 +226,7 @@ void Pacman::Update(int elapsedTime)
 		if (!_pausenmain->paused && !_pausenmain->deathScreen)
 		{
 
-			Input(elapsedTime, keyboardState, mouseState);
+			Input(elapsedTime, keyboardState);
 			CheckViewportCollision();
 			UpdatePacman(elapsedTime);
 			UpdateMunchie(elapsedTime);
@@ -223,6 +234,7 @@ void Pacman::Update(int elapsedTime)
 			UpdateGhost(elapsedTime);
 			CheckGhostCollisions();
 			CheckMunchieCollisions();
+			CheckCherryCollisions();
 			//if (_pacman->points == 10)
 			//{
 			//	_pausenmain->winScreen = true;
@@ -274,17 +286,21 @@ void Pacman::UpdateMunchie(int elapsedTime)
 //Update animation for cherry
 void Pacman::UpdateCherry(int elapsedTime)
 {
-	_cherry->currentFrameTime += elapsedTime;
-	if (_cherry->currentFrameTime > _cherry->frameTime)
+	for (int i = 0; i < CHERRYCOUNT; ++i)
 	{
-		_cherry->frame++;
+		_cherry[i]->currentFrameTime += elapsedTime;
+		if (_cherry[i]->currentFrameTime > _cherry[i]->frameTime)
+		{
+			_cherry[i]->frame++;
 
-		if (_cherry->frame >= 2)
-			_cherry->frame = 0;
+			if (_cherry[i]->frame >= 2)
+				_cherry[i]->frame = 0;
 
-		_cherry->currentFrameTime = 0;
-		_cherry->rect->X = _cherry->rect->Width * _cherry->frame;
+			_cherry[i]->currentFrameTime = 0;
+			_cherry[i]->rect->X = _cherry[i]->rect->Width * _cherry[i]->frame;
+		}
 	}
+
 }
 
 
@@ -443,7 +459,43 @@ void Pacman::CheckMunchieCollisions()
 }
 
 
+void Pacman::CheckCherryCollisions()
+{
+	// Local Variables
+	int i = 0;
+	int bottom1 = _pacman->position->Y + _pacman->sourceRect->Height;
+	int bottom2 = 0;
+	int left1 = _pacman->position->X;
+	int left2 = 0;
+	int right1 = _pacman->position->X + _pacman->sourceRect->Width;
+	int right2 = 0;
+	int top1 = _pacman->position->Y;
+	int top2 = 0;
 
+
+	for (i = 0; i < CHERRYCOUNT; i++)
+	{
+		// Populate variables with Ghost data
+		bottom2 = _cherry[i]->position->Y + _cherry[i]->rect->Height;
+		left2 = _cherry[i]->position->X;
+		right2 = _cherry[i]->position->X + _cherry[i]->rect->Width;
+		top2 = _cherry[i]->position->Y;
+
+		if ((bottom1 > top2) && (top1 < bottom2) && (right1 > left2) && (left1 < right2))
+		{
+
+			_cherry[i]->position->Y = -100;
+			_cherry[i]->position->X = -100;
+			_pacman->points += 5;
+			i = CHERRYCOUNT;
+			Audio::Play(_crunch);
+
+
+		}
+	}
+
+
+}
 
 
 
@@ -483,7 +535,7 @@ void Pacman::CheckViewportCollision()
 }
 
 //Check for any inputs for movement
-void Pacman::Input(int elapsedTime, Input::KeyboardState* state, Input::MouseState*mouseState)
+void Pacman::Input(int elapsedTime, Input::KeyboardState* state)
 {
 	// Checks if D key is pressed
 	if (state->IsKeyDown(Input::Keys::D))
@@ -527,14 +579,8 @@ void Pacman::Input(int elapsedTime, Input::KeyboardState* state, Input::MouseSta
 		_pacman->speedMultiplier = 1.0f;
 	}
 
-	mouseState->LeftButton;
 
-	// Handle Mouse Input – Reposition Cherry 
-	if (mouseState->LeftButton == Input::ButtonState::PRESSED)
-	{
-		_cherry->position->X = mouseState->X;
-		_cherry->position->Y = mouseState->Y;
-	}
+
 
 
 
@@ -599,7 +645,11 @@ void Pacman::Draw(int elapsedTime)
 
 	SpriteBatch::Draw(_pacman->texture, _pacman->position, _pacman->sourceRect); // Draws Pacman
 
-	SpriteBatch::Draw(_cherry->cMunchie, _cherry->position, _cherry->rect); // Draws Cherry
+	for (int i = 0; i < CHERRYCOUNT; ++i)
+	{
+		SpriteBatch::Draw(_cherry[i]->cMunchie, _cherry[i]->position, _cherry[i]->rect); // Draws Cherry
+	}
+	
 
 	//Draw ghost
 	for (int i = 0; i < GHOSTCOUNT; ++i)

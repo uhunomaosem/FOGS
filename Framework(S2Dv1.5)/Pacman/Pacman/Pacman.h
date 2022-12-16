@@ -9,6 +9,7 @@
 #endif
 #define MUNCHIECOUNT 50
 #define GHOSTCOUNT 32
+#define CHERRYCOUNT 5
 // Just need to include main header file
 #include "S2D/S2D.h"
 
@@ -120,13 +121,13 @@ private:
 	Player* _pacman;
 	Collect* _munchies[MUNCHIECOUNT];
 	Menu* _pausenmain;
-	Collect* _cherry;
+	Collect* _cherry[CHERRYCOUNT];
 	Enemy* _ghost[GHOSTCOUNT];
 	SoundEffect* _pop;
-	SoundEffect* _bgm;
+	SoundEffect* _crunch;
 
 	//Input methods 
-	void Input(int elapsedTime, Input::KeyboardState* state, Input::MouseState*mouseState);
+	void Input(int elapsedTime, Input::KeyboardState* state);
 
 
 	//Check methods
@@ -134,7 +135,7 @@ private:
 	void CheckViewportCollision();
 	void CheckGhostCollisions();
 	void CheckMunchieCollisions();
-
+	void CheckCherryCollisions();
 
 
 	//Update methods
