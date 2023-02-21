@@ -5,6 +5,7 @@
 #include "GL\freeglut.h" //freeglut library
 #include "GLUTCallbacks.h"
 
+#define REFRESHRATE 16
 class HelloGL
 {
 public:
@@ -20,5 +21,16 @@ public:
 
 	//handles drawing of shape
 	void DrawPolygon();
+
+	void Update();
+
+private:
+
+	float rotation;
+	float rotation2;
+
+	
 };
+
+
 
