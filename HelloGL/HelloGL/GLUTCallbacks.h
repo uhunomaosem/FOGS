@@ -9,4 +9,6 @@ namespace GLUTCallbacks
 
 
 	void Timer(int preferredRefresh);
+
+	void KeyBoard(unsigned char key, int x, int y);
 }

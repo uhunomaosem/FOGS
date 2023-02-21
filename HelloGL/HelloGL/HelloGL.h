@@ -24,6 +24,9 @@ public:
 
 	void Update();
 
+	//Handles keyboard input
+	void KeyBoard(unsigned char key, int x, int y);
+
 private:
 
 	float rotation;
