@@ -1,2 +1,5 @@
-﻿  HelloGL.cpp
+﻿  GLUTCallbacks.cpp
+  HelloGL.cpp
+  main.cpp
+  Generating Code...
   HelloGL.vcxproj -> C:\Users\o012542m\Documents\GitHub\FOGS\HelloGL\Debug\HelloGL.exe
