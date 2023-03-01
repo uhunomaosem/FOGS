@@ -94,7 +94,8 @@ void HelloGL::Display()
 {
 	glClear(GL_COLOR_BUFFER_BIT); //this clears the scene
 	glPushMatrix();
-	DrawCubeArray();
+	DrawIndexedCube();
+	/*DrawCubeArray();*/
 	glPopMatrix();
 	glutSwapBuffers();
 	/*DrawPolygon();*/ //calls function of drawing shape
@@ -209,17 +210,17 @@ void HelloGL::DrawCubeArray()
 {
 	glPushMatrix();
 
-	glBegin(GL_TRIANGLES);
-	for (int i = 0; i < 36; i++)
-	{
-		
-		//glColor3f(colours[i].r,colours[i].g,colours[i].b);
-		//glVertex3f(vertices[i].x, vertices[i].y, vertices[i].z);
-		glColor3fv(&colours[i].r);
-		glVertex3fv(&vertices[i].x);
+	//glBegin(GL_TRIANGLES);
+	//for (int i = 0; i < 36; i++)
+	//{
+	//	
+	//	//glColor3f(colours[i].r,colours[i].g,colours[i].b);
+	//	//glVertex3f(vertices[i].x, vertices[i].y, vertices[i].z);
+	//	glColor3fv(&colours[i].r);
+	//	glVertex3fv(&vertices[i].x);
 
-	}
-	glEnd();
+	//}
+	//glEnd();
 
 	glPopMatrix();
 }
@@ -232,7 +233,8 @@ void HelloGL::DrawIndexedCube()
 	for (int i = 0; i < 36; i++)
 	{
 		//Implement draw code here
-
+		glColor3f(indexedColours[indices[i]].r, indexedColours[indices[i]].g, indexedColours[indices[i]].b);
+		glVertex3f(indexedVertices[indices[i]].x, indexedVertices[indices[i]].y, indexedVertices[indices[i]].z);
 	}
 	glEnd();
 
