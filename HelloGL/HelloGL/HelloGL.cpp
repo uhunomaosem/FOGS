@@ -59,8 +59,8 @@ HelloGL::HelloGL(int argc, char* argv[])
 {
 	camera = new Camera();
 
-	/*camera->eye.x = 0.0f; camera->eye.y = 0.0f; camera->eye.z = 1.0f;*/
-	camera->eye.x = 5.0f; camera->eye.y = 5.0f; camera->eye.z = -5.0f;
+	camera->eye.x = 0.0f; camera->eye.y = 0.0f; camera->eye.z = 1.0f;
+	/*camera->eye.x = 5.0f; camera->eye.y = 5.0f; camera->eye.z = -5.0f;*/
 	camera->center.x = 0.0f; camera->center.y = 0.0f; camera->center.z = 0.0f;
 	camera->up.x = 0.0f; camera->up.y = 1.0f; camera->up.z = 0.0f;
 
@@ -94,7 +94,10 @@ void HelloGL::Display()
 {
 	glClear(GL_COLOR_BUFFER_BIT); //this clears the scene
 	glPushMatrix();
-	DrawIndexedCube();
+	glRotatef(rotation, 1.0f, 0.0f, 0.0f);
+	glutWireTeapot(0.1);
+
+	/*DrawIndexedCube();*/
 	/*DrawCubeArray();*/
 	glPopMatrix();
 	glutSwapBuffers();
@@ -194,10 +197,10 @@ HelloGL::~HelloGL(void)
 void HelloGL::KeyBoard(unsigned char key, int x, int y)
 {
 	if (key == 'd')
-		camera->up.x += 2.0f;
+		camera->eye.x += 2.0f;
 
 	if (key == 'a')
-		camera->up.x -= 2.0f;
+		camera->eye.x -= 2.0f;
 
 	if (key == 's')
 		camera->eye.z += 0.5f;
