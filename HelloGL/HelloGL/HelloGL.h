@@ -4,32 +4,11 @@
 #include <gl/GLU.h> //OpenGL Utilities 
 #include "GL\freeglut.h" //freeglut library
 #include "GLUTCallbacks.h"
+#include "Structures.h"
+#include "Cube.h"
 
 #define REFRESHRATE 16
 
-struct Vector3
-{
-	float x;
-	float y;
-	float z;
-};
-
-struct Camera
-{
-	Vector3 eye;
-	Vector3 center;
-	Vector3 up;
-};
-
-struct Colour
-{
-	GLfloat r, g, b;
-};
-
-struct Vertex
-{
-	GLfloat	x, y, z;
-};
 
 
 
@@ -54,24 +33,25 @@ public:
 	//Handles keyboard input
 	void KeyBoard(unsigned char key, int x, int y);
 
-	//draw indexed cube
-	void DrawIndexedCube();
+	////draw indexed cube
+	//void DrawIndexedCube();
 
-	//to draw cube
-	void DrawCubeArray();
+	////to draw cube
+	//void DrawCubeArray();
 
 private:
 
-	float rotation;
-	float rotation2;
+	//float rotation;
+	//float rotation2;
+	//Camera* camera;
+	//static Vertex vertices[];
+	//static Colour colours[];
+	//static Vertex indexedVertices[];
+	//static Colour indexedColours[];
+	//static GLushort indices[];
 	Camera* camera;
-	static Vertex vertices[];
-	static Colour colours[];
-	static Vertex indexedVertices[];
-	static Colour indexedColours[];
-	static GLushort indices[];
-
-
+	Cube* cube;
+	//Cube* Update;
 };
 
 
