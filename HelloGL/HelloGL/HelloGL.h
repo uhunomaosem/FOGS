@@ -50,7 +50,7 @@ private:
 	//static Colour indexedColours[];
 	//static GLushort indices[];
 	Camera* camera;
-	Cube* cube;
+	Cube* cube[];
 	//Cube* Update;
 };
 

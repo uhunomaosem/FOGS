@@ -13,9 +13,10 @@ private:
 	static GLushort indices[];
 	GLfloat _rotation;
 	Camera* camera;
+	Vector3 _position;
 
 public:
-	Cube();
+	Cube(float x, float y, float z);
 	~Cube();
 
 	void Draw();
