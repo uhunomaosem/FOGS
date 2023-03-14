@@ -49,8 +49,9 @@ HelloGL::HelloGL(int argc, char* argv[])
 	camera->eye.x = 0.0f; camera->eye.y = 0.0f; camera->eye.z = 5.0f;
 	camera->center.x = 0.0f; camera->center.y = 0.0f; camera->center.z = 0.0f;
 	camera->up.x = 0.0f; camera->up.y = 1.0f; camera->up.z = 0.0f;
-	
-	for (int i = 1; i < 200; i++) 
+	Cube::Load((char*)"cube.txt");
+
+	for (int i = 0; i < CUBES; i++) 
 	{
 		cube[i] = new Cube(((rand() % 400) / 10.0f) - 20.0f, ((rand() % 200) / 10.0f) - 10.0f, -(rand() % 1000) / 10.0f);
 	}
@@ -83,11 +84,13 @@ HelloGL::HelloGL(int argc, char* argv[])
 
 void HelloGL::Display()
 {
+	
 	gluLookAt(camera->eye.x, camera->eye.y, camera->eye.z, camera->center.x, camera->center.y, camera->center.z, camera->up.x, camera->up.y, camera->up.z);
 	glClear(GL_COLOR_BUFFER_BIT); //this clears the scene
 
-	for (int i = 1; i < 200; i++)
+	for (int i = 0; i < CUBES; i++)
 	{
+
 		cube[i]->Draw();
 	}
 
@@ -109,7 +112,7 @@ void HelloGL::DrawPolygon()
 
 void HelloGL::Update()
 {
-	for (int i = 1; i < 200; i++)
+	for (int i = 0; i < CUBES; i++)
 	{
 		cube[i]->Update();
 	}

@@ -8,7 +8,7 @@
 #include "Cube.h"
 
 #define REFRESHRATE 16
-
+#define CUBES 200
 
 
 
@@ -50,7 +50,7 @@ private:
 	//static Colour indexedColours[];
 	//static GLushort indices[];
 	Camera* camera;
-	Cube* cube[];
+	Cube* cube[CUBES];
 	//Cube* Update;
 };
 

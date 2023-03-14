@@ -1,4 +1,2 @@
 ﻿  HelloGL.cpp
-C:\Users\o012542m\Documents\GitHub\FOGS\HelloGL\HelloGL\HelloGL.h(53,8): warning C4200: nonstandard extension used: zero-sized array in struct/union
-C:\Users\o012542m\Documents\GitHub\FOGS\HelloGL\HelloGL\HelloGL.h(53,8): message : This member will be ignored by a defaulted constructor or copy/move assignment operator
   HelloGL.vcxproj -> C:\Users\o012542m\Documents\GitHub\FOGS\HelloGL\Debug\HelloGL.exe

@@ -1,24 +1,30 @@
 #include "Cube.h"
 #include <fstream>
 #include <iostream>
+#include <string>
+#include <istream>
+
+Vertex* Cube::indexedVertices = nullptr;
+Colour* Cube::indexedColours = nullptr;
+GLushort* Cube::indices = nullptr;
 
 
-Vertex Cube::indexedVertices[] = { 1, 1, 1,  -1, 1, 1,  // v0,v1,
-				-1,-1, 1,   1,-1, 1,   // v2,v3
-				1,-1,-1,   1, 1,-1,    // v4,v5
-				-1, 1,-1,   -1,-1,-1 }; // v6,v7
-
-Colour Cube::indexedColours[] = { 1, 1, 1,   1, 1, 0,   // v0,v1,
-				1, 0, 0,   1, 0, 1,   // v2,v3
-				0, 0, 1,   0, 1, 1,   // v4,v5
-				0, 1, 0,   0, 0, 0 }; //v6,v7
-
-GLushort Cube::indices[] = { 0, 1, 2,  2, 3, 0,      // front
-				0, 3, 4,  4, 5, 0,      // right
-				0, 5, 6,  6, 1, 0,      // top
-				1, 6, 7,  7, 2, 1,      // left
-				7, 4, 3,  3, 2, 7,      // bottom
-				4, 7, 6,  6, 5, 4 };    // back
+//Vertex Cube::indexedVertices[] = {/* 1, 1, 1,  -1, 1, 1,  */// v0,v1,
+//				/*-1,-1, 1,   1,-1, 1,*/   // v2,v3
+//				/*1,-1,-1,   1, 1,-1,  */  // v4,v5
+//				/*-1, 1,-1,   -1,-1,-1*/ }; // v6,v7
+//
+//Colour Cube::indexedColours[] = { /*1, 1, 1,   1, 1, 0,*/   // v0,v1,
+//				/*1, 0, 0,   1, 0, 1,*/   // v2,v3
+//				/*0, 0, 1,   0, 1, 1, */  // v4,v5
+//				/*0, 1, 0,   0, 0, 0*/ }; //v6,v7
+//
+//GLushort Cube::indices[] = { /*0, 1, 2,  2, 3, 0,  */    // front
+//				/*0, 3, 4,  4, 5, 0,*/      // right
+//				/*0, 5, 6,  6, 1, 0, */     // top
+//				/*1, 6, 7,  7, 2, 1, */     // left
+//				/*7, 4, 3,  3, 2, 7,  */    // bottom
+//				/*4, 7, 6,  6, 5, 4*/ };    // back
 
 int Cube::numVertices = 0;
 int Cube::numColours = 0;
@@ -74,34 +80,45 @@ void Cube::Update()
 }
 
 
-//bool Cube::Load(char* path)
-//{
-//	std::ifstream inFile;
-//	inFile.open(path);
-//	if (!inFile.good())
-//	{
-//		std::cerr << "Can't open text file " << path << std::endl;
-//		return false;
-//	}
-//
-//	inFile >> numVertices;
-//	indexedVertices = new Vertex[numVertices];
-//	for (int i = 0; i < numVertices; i++)
-//	{
-//		//TODO Use inFile to populate the indexedVertices array
-//		inFile >> indexedVertices[i];
-//	}
-//
-//	//TODO: Load Color information
-//	inFile >> numColours;
-//	indexedColours = new Colour[numColours];
-//	for (int i = 0; i < numVertices; i++)
-//	{
-//		inFile >> indexedColours[i];
-//	}
-//	//TODO: Load Indices information
-//
-//	inFile.close();
-//
-//	return true;
-//}
+bool Cube::Load(char* path)
+{
+	std::ifstream inFile;
+	inFile.open(path);
+	if (!inFile.good())
+	{
+		std::cerr << "Can't open text file " << path << std::endl;
+		return false;
+	}
+
+	inFile >> numVertices;
+	indexedVertices = new Vertex[numVertices];
+	for (int i = 0; i < numVertices; i++)
+	{
+		//TODO Use inFile to populate the indexedVertices array
+		inFile >> indexedVertices[i].x;
+		inFile >> indexedVertices[i].y;
+		inFile >> indexedVertices[i].z;
+	}
+
+	//TODO: Load Color information
+	inFile >> numColours;
+	indexedColours = new Colour[numColours];
+	for (int i = 0; i < numColours; i++)
+	{
+		inFile >> indexedColours[i].r;
+		inFile >> indexedColours[i].g;
+		inFile >> indexedColours[i].b;
+	}
+
+	//TODO: Load Indices information
+	inFile >> numIndices;
+	indices = new GLushort[numIndices];
+	for (int i = 0; i < numIndices; i++)
+	{
+		inFile >> indices[i];
+	}
+
+	inFile.close();
+
+	return true;
+}
