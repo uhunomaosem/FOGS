@@ -46,7 +46,7 @@ HelloGL::HelloGL(int argc, char* argv[])
 	
 	camera = new Camera();
 	/*camera->eye.x = 0.0f; camera->eye.y = 0.0f; camera->eye.z = 1.0f;*/
-	camera->eye.x = 5.0f; camera->eye.y = 5.0f; camera->eye.z = -5.0f;
+	camera->eye.x = 0.0f; camera->eye.y = 0.0f; camera->eye.z = 5.0f;
 	camera->center.x = 0.0f; camera->center.y = 0.0f; camera->center.z = 0.0f;
 	camera->up.x = 0.0f; camera->up.y = 1.0f; camera->up.z = 0.0f;
 	
@@ -72,7 +72,7 @@ HelloGL::HelloGL(int argc, char* argv[])
 	glViewport(0, 0, 800, 800);
 
 	// Set the correct perspective.
-	gluPerspective(45, 1, 0, 1000);
+	gluPerspective(45, 1, 1, 1000);
 
 	glMatrixMode(GL_MODELVIEW);
 	glEnable(GL_CULL_FACE);
