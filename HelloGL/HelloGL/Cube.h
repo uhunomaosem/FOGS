@@ -1,16 +1,14 @@
 #pragma once
-#include <Windows.h>
-#include <gl/GL.h>
-#include <gl/GLU.h>
-#include "GL\freeglut.h"
 #include "Structures.h"
+#include "SceneObject.h"
 
-class Cube
+class Cube : public SceneObject
 {
 private:
-	static Vertex* indexedVertices;
-	static Colour* indexedColours;
-	static GLushort* indices;
+	//static Vertex* indexedVertices;
+	//static Colour* indexedColours;
+	//static GLushort* indices;
+	
 	GLfloat _rotation;
 	//Camera* camera;
 	Vector3 _position;
@@ -18,7 +16,7 @@ private:
 
 
 public:
-	Cube(float x, float y, float z);
+	Cube(Mesh* mesh, float x, float y, float z);
 	~Cube();
 	static bool Load(char* path);
 	void Draw();

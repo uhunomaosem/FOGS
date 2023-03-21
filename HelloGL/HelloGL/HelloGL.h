@@ -39,6 +39,11 @@ public:
 	////to draw cube
 	//void DrawCubeArray();
 
+
+	void InitObjects();
+	void InitGL(int argc, char* argv[]);
+
+
 private:
 
 	//float rotation;
@@ -50,7 +55,7 @@ private:
 	//static Colour indexedColours[];
 	//static GLushort indices[];
 	Camera* camera;
-	Cube* cube[CUBES];
+	SceneObject* objects[1000];
 	//Cube* Update;
 };
 
