@@ -29,7 +29,7 @@ int Cube::numColours = 0;
 int Cube::numIndices = 0;
 
 
-Cube::Cube(Mesh* mesh, float x, float y, float z) : SceneObject(mesh)
+Cube::Cube(Mesh* mesh, Texture2D* texture, float x, float y, float z) : SceneObject(mesh,texture)
 {
 
 	_position.x = x;
@@ -44,8 +44,11 @@ Cube::~Cube()
 
 void Cube::Draw()
 {
+	glBindTexture(GL_TEXTURE_2D, texture->GetID());
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	if (_mesh->Vertices != nullptr && _mesh->Colours != nullptr && _mesh->Indices != nullptr)
 	{
+		glTexCoordPointer(2, GL_FLOAT, 0, _mesh->TextCoords);
 		glPushMatrix();
 		glTranslatef(_position.x, _position.y, _position.z);
 		glRotatef(_rotation, 1.0f, 0.0f, 0.0f);
@@ -62,7 +65,7 @@ void Cube::Draw()
 		glPopMatrix();
 
 	}
-
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 }
 
 

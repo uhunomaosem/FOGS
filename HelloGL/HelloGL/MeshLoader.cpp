@@ -76,6 +76,17 @@ namespace MeshLoader
 			inFile >> mesh->Colours[i].b;
 		}
 
+		inFile >> mesh->TextCoordCount;
+		mesh->TextCoords = new TextCoord[mesh->TextCoordCount];
+		for (int i = 0; i < mesh->TextCoordCount; i++)
+		{
+			inFile >> mesh->TextCoords[i].u;
+			inFile >> mesh->TextCoords[i].v;
+		}
+
+
+
+
 		//TODO: Load Indices information
 		inFile >> mesh->IndexCount;
 		mesh->Indices = new GLushort[mesh->IndexCount];

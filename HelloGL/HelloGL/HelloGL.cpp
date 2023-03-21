@@ -57,11 +57,14 @@ void HelloGL::InitObjects()
 	camera->eye.x = 0.0f; camera->eye.y = 0.0f; camera->eye.z = 5.0f;
 	camera->center.x = 0.0f; camera->center.y = 0.0f; camera->center.z = 0.0f;
 	camera->up.x = 0.0f; camera->up.y = 1.0f; camera->up.z = 0.0f;
-	Mesh* cubeMesh = MeshLoader::Load((char*)"cube.txt");;
+	Mesh* cubeMesh = MeshLoader::Load((char*)"cube.txt");
+	Texture2D* texture = new Texture2D();
+	texture->Load((char*)"penguins.raw", 512, 512);
+
 
 	for (int i = 0; i < 1000; i++)
 	{
-		objects[i] = new Cube(cubeMesh, ((rand() % 400) / 10.0f) - 20.0f, ((rand() % 200) / 10.0f) - 10.0f, -(rand() % 1000) / 10.0f);
+		objects[i] = new Cube(cubeMesh, texture, ((rand() % 400) / 10.0f) - 20.0f, ((rand() % 200) / 10.0f) - 10.0f, -(rand() % 1000) / 10.0f);
 	}
 
 	//Cube* Update;
@@ -73,6 +76,10 @@ void HelloGL::InitGL(int argc, char* argv[])
 
 	GLUTCallbacks::Init(this);
 	glutInit(&argc, argv);
+	glEnable(GL_TEXTURE_2D); // without this you will just get white boxes
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
 	glutInitDisplayMode(GLUT_DOUBLE);
 	glutInitWindowSize(800, 800);
 	glutCreateWindow("Simple OpenGL Program");
@@ -81,7 +88,6 @@ void HelloGL::InitGL(int argc, char* argv[])
 	glutKeyboardFunc(GLUTCallbacks::KeyBoard);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-
 	// Set the viewport to be the entire window
 	glViewport(0, 0, 800, 800);
 

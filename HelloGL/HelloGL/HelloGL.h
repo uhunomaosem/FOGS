@@ -6,6 +6,7 @@
 #include "GLUTCallbacks.h"
 #include "Structures.h"
 #include "Cube.h"
+#include "Texture2D.h"
 
 #define REFRESHRATE 16
 #define CUBES 200
