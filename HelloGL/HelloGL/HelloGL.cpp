@@ -95,8 +95,8 @@ void HelloGL::InitGL(int argc, char* argv[])
 	gluPerspective(45, 1, 1, 1000);
 
 	glMatrixMode(GL_MODELVIEW);
-	glEnable(GL_CULL_FACE);
-	glCullFace(GL_BACK);
+	
+	
 
 	
 }
@@ -130,10 +130,12 @@ void HelloGL::DrawPolygon()
 
 void HelloGL::Update()
 {
+	glLoadIdentity();
 	for (int i = 0; i < 1000; i++)
 	{
 		objects[i]->Update();
 	}
+	glutPostRedisplay();
 
 }
 

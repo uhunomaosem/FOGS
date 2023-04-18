@@ -2,7 +2,7 @@
 
 SceneObject::SceneObject(Mesh* mesh, Texture2D* texture)
 {
-
+	_texture = texture;
 	_mesh = mesh;
 }
 

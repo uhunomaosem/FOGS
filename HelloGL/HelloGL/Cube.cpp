@@ -44,11 +44,12 @@ Cube::~Cube()
 
 void Cube::Draw()
 {
-	glBindTexture(GL_TEXTURE_2D, texture->GetID());
+	glBindTexture(GL_TEXTURE_2D, _texture->GetID());
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	glTexCoordPointer(2, GL_FLOAT, 0, _mesh->TextCoords);
 	if (_mesh->Vertices != nullptr && _mesh->Colours != nullptr && _mesh->Indices != nullptr)
 	{
-		glTexCoordPointer(2, GL_FLOAT, 0, _mesh->TextCoords);
+		
 		glPushMatrix();
 		glTranslatef(_position.x, _position.y, _position.z);
 		glRotatef(_rotation, 1.0f, 0.0f, 0.0f);
@@ -57,8 +58,8 @@ void Cube::Draw()
 		{
 			//Implement draw code here
 
-			glColor3f(_mesh->Colours[_mesh->Indices[i]].r, _mesh->Colours[_mesh->Indices[i]].g, _mesh->Colours[_mesh->Indices[i]].b);
-			glVertex3f(_mesh->Vertices[_mesh->Indices[i]].x, _mesh->Vertices[_mesh->Indices[i]].y, _mesh->Vertices[_mesh->Indices[i]].z);
+			glColor3fv(&_mesh->Colours[_mesh->Indices[i]].r);
+			glVertex3fv(&_mesh->Vertices[_mesh->Indices[i]].x);
 		}
 		glEnd();
 
@@ -71,9 +72,9 @@ void Cube::Draw()
 
 void Cube::Update()
 {
-	glLoadIdentity();
+	
 	//gluLookAt(camera->eye.x, camera->eye.y, camera->eye.z, camera->center.x, camera->center.y, camera->center.z, camera->up.x, camera->up.y, camera->up.z);
-	glutPostRedisplay();
+	
 	_rotation += 0.95f;
 
 	if (_rotation > 360.0)
