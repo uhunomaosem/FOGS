@@ -7,26 +7,29 @@
 		#pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
 	#endif
 #endif
-
+#define MUNCHIECOUNT 50
+#define GHOSTCOUNT 32
+#define CHERRYCOUNT 5
 // Just need to include main header file
 #include "S2D/S2D.h"
 
 // Reduces the amount of typing by including all classes in S2D namespace
 using namespace S2D;
 
-//Structure Definition
+
 struct Player
 {
 	float speedMultiplier;
 	int currentFrameTime;
 	int direction;
 	int frame;
+	int points;
 	Rect* sourceRect;
 	Texture2D* texture;
 	Vector2* position;
 	const int frameTime = 160;
 	const float speed = 0.1f;
-
+	bool dead;
 };
 
 struct Collect
@@ -37,19 +40,41 @@ struct Collect
 	Rect* rect;
 	Texture2D* blueTexture;
 	Texture2D* invertedTexture;
+	Vector2* position;
 	const int frameTime = 600;
+	Texture2D* cMunchie;
+	int munchieCount;
 };
 
-struct Menu 
+struct Menu
 {
-	Texture2D* background;
+	Texture2D* background1;
+	Texture2D* background2;
+	Texture2D* background3;
+	Texture2D* background4;
 	Rect* rectangle;
 	Vector2* stringPosition;
 	bool paused;
 	bool pKeyDown;
 	bool startGame;
 	Vector2* cordstringPosition;
+	bool deathScreen;
+	bool winScreen;
 };
+
+struct Enemy
+{
+	Vector2* position;
+	Texture2D* texture;
+	Rect* sourceRect;
+	int direction;
+	float speed;
+	int frame;
+	int currentFrameTime;
+	int frameCount;
+	const int frameTime = 160;
+};
+
 
 
 
@@ -91,9 +116,33 @@ private:
 	//bool _pKeyDown;
 	//bool _startGame;
 
+
+
 	Player* _pacman;
-	Collect* _munchie;
+	Collect* _munchies[MUNCHIECOUNT];
 	Menu* _pausenmain;
+	Collect* _cherry[CHERRYCOUNT];
+	Enemy* _ghost[GHOSTCOUNT];
+	SoundEffect* _pop;
+	SoundEffect* _crunch;
+
+	//Input methods 
+	void Input(int elapsedTime, Input::KeyboardState* state);
+
+
+	//Check methods
+	void CheckPaused(Input::KeyboardState* state);
+	void CheckViewportCollision();
+	void CheckGhostCollisions();
+	void CheckMunchieCollisions();
+	void CheckCherryCollisions();
+
+
+	//Update methods
+	void UpdatePacman(int elapsedTime);
+	void UpdateMunchie(int elapsedTime);
+	void UpdateCherry(int elapsedTime);
+	void UpdateGhost(int elapsedTime);
 
 public:
 	/// <summary> Constructs the Pacman class. </summary>
@@ -110,4 +159,6 @@ public:
 
 	/// <summary> Called every frame - draw game here. </summary>
 	void virtual Draw(int elapsedTime);
+
+
 };
